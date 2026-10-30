@@ -228,12 +228,8 @@
         <p><span>我的学习组</span><strong id="accountGroups">加载中…</strong></p>
         <p><span>我的好友</span><strong id="accountFriends">加载中…</strong></p>
       </section>
-      <section class="account-detail" id="notificationBox" hidden>
-        <p><span>管理员通知</span><strong id="notifications">暂无通知</strong></p>
-      </section>
       <div class="actions">
         <a class="btn primary" href="learnIndex.html">选择专业方向</a
-        ><a class="btn secondary" href="index.html">访问个人主页</a
         ><a class="btn secondary" id="logoutLink" href="login.html">退出登录</a>
       </div>
     </main>
@@ -306,14 +302,6 @@
           setText("accountGroups", "暂不可用");
           setText("accountFriends", "暂不可用");
         }
-        try {
-          const notificationResponse = await fetch("/api/notifications");
-          const notificationResult = await notificationResponse.json();
-          if (notificationResult.code === 200 && notificationResult.data && notificationResult.data.length) {
-            document.getElementById("notificationBox").hidden = false;
-            setText("notifications", notificationResult.data.map(n => `${n.readStatus ? "" : "【未读】"}${n.content}`).join(" ｜ "));
-          }
-        } catch (notificationError) { console.error(notificationError); }
         } catch (error) {
           console.error(error);
           setText("accountStatus", "读取失败");

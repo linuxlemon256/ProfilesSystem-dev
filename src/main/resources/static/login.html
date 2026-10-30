@@ -246,7 +246,7 @@
         <h2>登录账户</h2>
         <p class="sub">输入你的账户信息以继续</p>
         <div class="login-methods" role="tablist" aria-label="登录方式">
-          <button class="method-tab active" type="button" data-mode="invite">邀请码</button>
+          <button class="method-tab active" type="button" data-mode="invite">身份码</button>
           <button class="method-tab" type="button" data-mode="password">账户密码</button>
           <button class="method-tab" type="button" data-mode="email">邮箱密码</button>
         </div>
@@ -267,12 +267,12 @@
             <label for="theEmail">邮箱</label><input id="theEmail" name="email" type="email" placeholder="请输入注册邮箱" autocomplete="email" />
           </div>
           <div class="field">
-            <label for="theInviteCode">邀请码</label
+            <label for="theInviteCode">身份码</label
             ><input
               id="theInviteCode"
               name="code"
               type="text"
-              placeholder="请输入邀请码"
+              placeholder="请输入身份码"
               autocomplete="one-time-code"
               autocapitalize="characters"
               spellcheck="false"
@@ -339,7 +339,7 @@
         clearError();
 
         if (mode === "invite" && (!username || !code)) {
-          showError("请填写账户和邀请码");
+          showError("请填写账户和身份码");
           return;
         }
         if (mode === "password" && (!username || !password)) {
@@ -375,7 +375,7 @@
 
           const success = Number(result.code) === 200;
           if (success) {
-            const destination = ["LLMindex.html", "projectDemo.html", "storageDemo.html", "communication.html", "groups.html"].includes(requestedRedirect)
+          const destination = ["LLMindex.html", "projectDemo.html", "storageDemo.html", "communication.html", "groups.html", "notification.html", "feedback.html", "joinUs.html"].includes(requestedRedirect)
               ? requestedRedirect
               : "learnIndex.html";
             window.location.replace(destination);

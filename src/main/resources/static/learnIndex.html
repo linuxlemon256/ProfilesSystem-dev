@@ -144,6 +144,72 @@
       }
       .llm-entry strong { display: block; font-size: 14px; }
       .llm-entry small { display: block; margin-top: 3px; color: #6366f1; font-size: 11px; }
+      /* 右下角常驻快捷入口：和返回顶部按钮一样，不占用主内容空间 */
+      .quick-float {
+        position: fixed !important;
+        inset: auto 24px 24px auto;
+        z-index: 50;
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+        gap: 11px;
+      }
+      .quick-float a {
+        position: relative;
+        display: grid;
+        width: 48px;
+        height: 48px;
+        place-items: center;
+        border: 1px solid #ffffffb8;
+        border-radius: 50%;
+        color: #fff;
+        text-decoration: none;
+        font-size: 20px;
+        box-shadow: 0 12px 26px #1725542e, inset 0 1px #ffffff66;
+        transition: transform .22s ease, box-shadow .22s ease, width .22s ease, border-radius .22s ease;
+        animation: quickFloatIn .55s both;
+      }
+      .quick-float a:nth-child(2) { animation-delay: .08s; }
+      .quick-float a:nth-child(3) { animation-delay: .16s; }
+      .quick-float a:hover,
+      .quick-float a:focus-visible {
+        width: 146px;
+        border-radius: 16px;
+        transform: translateX(-3px);
+        box-shadow: 0 16px 32px #17255445, inset 0 1px #ffffff80;
+        outline: none;
+      }
+      .quick-float a span { pointer-events: none; }
+      .quick-float a .quick-label {
+        position: absolute;
+        right: 45px;
+        width: 0;
+        overflow: hidden;
+        opacity: 0;
+        white-space: nowrap;
+        font-size: 13px;
+        font-weight: 800;
+        transition: width .22s ease, opacity .16s ease;
+      }
+      .quick-float a:hover .quick-label,
+      .quick-float a:focus-visible .quick-label {
+        right: auto;
+        left: 17px;
+        width: 105px;
+        opacity: 1;
+      }
+      .quick-float a:hover .quick-icon,
+      .quick-float a:focus-visible .quick-icon {
+        position: absolute;
+        right: 14px;
+      }
+      .quick-notice { background: linear-gradient(135deg, #4f46e5, #7c3aed); }
+      .quick-feedback { background: linear-gradient(135deg, #0f766e, #06b6d4); }
+      .quick-join { background: linear-gradient(135deg, #db2777, #f97316); }
+      @keyframes quickFloatIn {
+        from { opacity: 0; transform: translateY(14px) scale(.86); }
+        to { opacity: 1; transform: translateY(0) scale(1); }
+      }
       .section-title {
         display: flex;
         align-items: center;
@@ -410,7 +476,7 @@
         font-weight: 700;
       }
       .services-section { margin-top: 38px; }
-      .community-section { margin-top: 38px; }
+      .community-section { display: none; margin-top: 38px; }
       .community-links {
         display: grid;
         grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -650,6 +716,27 @@
         .topnav a {
           display: none;
         }
+        .quick-float {
+          inset: auto 14px 16px auto;
+          gap: 9px;
+        }
+        .quick-float a {
+          width: 44px;
+          height: 44px;
+          font-size: 18px;
+        }
+      }
+      @media (hover: none) {
+        .quick-float a:hover,
+        .quick-float a:focus-visible {
+          width: 48px;
+          border-radius: 50%;
+          transform: none;
+        }
+        .quick-float a:hover .quick-label,
+        .quick-float a:focus-visible .quick-label { display: none; }
+        .quick-float a:hover .quick-icon,
+        .quick-float a:focus-visible .quick-icon { position: static; }
       }
 
     </style>
@@ -894,6 +981,17 @@
       </div>
       <p class="foot">ProfilesSystem · 个人学习与资料空间</p>
     </main>
+    <nav class="quick-float" aria-label="快捷入口">
+      <a class="quick-notice" href="notification.html" aria-label="通知中心" title="通知中心">
+        <span class="quick-label">通知中心</span><span class="quick-icon">🔔</span>
+      </a>
+      <a class="quick-feedback" href="feedback.html" aria-label="问题反馈" title="问题反馈">
+        <span class="quick-label">问题反馈</span><span class="quick-icon">✉</span>
+      </a>
+      <a class="quick-join" href="joinUs.html" aria-label="加入我们" title="加入我们">
+        <span class="quick-label">加入我们</span><span class="quick-icon">＋</span>
+      </a>
+    </nav>
     <script>
       const userLabel = document.getElementById("user");
       const loginTip = document.getElementById("loginTip");

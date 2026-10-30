@@ -17,7 +17,7 @@ import java.util.regex.Pattern;
 @Service
 public class UserService {
 
-    /** 邀请码字符集：去掉 0/O、1/I 等易混字符。 */
+    /** 身份码字符集：去掉 0/O、1/I 等易混字符。 */
     private static final String CODE_CHARS = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
     private static final int CODE_LENGTH = 10;
     private static final SecureRandom RANDOM = new SecureRandom();
@@ -93,7 +93,7 @@ public class UserService {
         }
         return Result.ok(user);
     }
-    /** 审核通过：isin 置 1；没有邀请码时生成一个并返回。 */
+    /** 审核通过：isin 置 1；没有身份码时生成一个并返回。 */
     @Transactional
     public Result<String> update(String name) {
         User user = userMapper.findByName(name);
@@ -108,26 +108,26 @@ public class UserService {
         if (code == null || code.isBlank()) {
             code = generateInviteCode();
             if (code == null) {
-                return Result.fail("邀请码生成失败");
+                return Result.fail("身份码生成失败");
             }
             if (userMapper.updateCode(name, code) != 1) {
-                return Result.fail("邀请码保存失败");
+                return Result.fail("身份码保存失败");
             }
         }
         return Result.ok(code);
     }
 
-    /** 邀请码登录：账户 + 邀请码都匹配，且已审核通过。 */
+    /** 身份码登录：账户 + 身份码都匹配，且已审核通过。 */
     @Transactional
     public Result<String> login(LoginBody loginBody) {
         String username = loginBody.getUsername() == null ? "" : loginBody.getUsername().trim();
         String code = loginBody.getCode() == null ? "" : loginBody.getCode().trim().toUpperCase();
         if (username.isEmpty() || code.isEmpty()) {
-            return Result.fail("请填写账户和邀请码");
+            return Result.fail("请填写账户和身份码");
         }
         User user = userMapper.findByName(username);
         if (user == null || user.getCode() == null || !user.getCode().equalsIgnoreCase(code)) {
-            return Result.fail("账户或邀请码错误");
+            return Result.fail("账户或身份码错误");
         }
         if (user.getIsin() != 1) {
             return Result.fail("账户尚未通过审核");
@@ -167,7 +167,7 @@ public class UserService {
     public Result<String> resetPassword(String username, String code, String password) {
         User user = userMapper.findByName(username);
         if (user == null || user.getCode() == null || !user.getCode().equalsIgnoreCase(code)) {
-            return Result.fail("账户或邀请码错误");
+            return Result.fail("账户或身份码错误");
         }
         if (password == null || password.length() < 6) return Result.fail("密码至少需要 6 位");
         return userMapper.updatePassword(username, passwordEncoder.encode(password)) == 1
@@ -204,7 +204,7 @@ public class UserService {
         return userMapper.updateByAdmin(username, update) == 1 ? Result.ok(null) : Result.fail("用户信息未发生变化");
     }
 
-    /** 生成不重复的随机邀请码；多次冲突时返回 null。 */
+    /** 生成不重复的随机身份码；多次冲突时返回 null。 */
     private String generateInviteCode() {
         for (int attempt = 0; attempt < 10; attempt++) {
             StringBuilder sb = new StringBuilder(CODE_LENGTH);

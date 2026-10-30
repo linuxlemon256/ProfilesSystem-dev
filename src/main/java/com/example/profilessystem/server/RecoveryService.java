@@ -51,6 +51,6 @@ public class RecoveryService {
             for (int j = 0; j < 10; j++) code.append(CODE_CHARS.charAt(random.nextInt(CODE_CHARS.length())));
             if (userMapper.findByCode(code.toString()) == null) return code.toString();
         }
-        throw new IllegalStateException("邀请码生成失败");
+        throw new IllegalStateException("身份码生成失败");
     }
 }

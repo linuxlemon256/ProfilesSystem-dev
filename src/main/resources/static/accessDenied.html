@@ -55,6 +55,15 @@
       if (params.get("resource") === "llm") {
         document.getElementById("message").textContent = "LLM 学习助手仅对具有关联关系的账户开放。";
       }
+      const feature = params.get("feature");
+      const featureNames = { llm: "LLM 学习助手", community: "反馈与加入申请", notifications: "管理员通知", groups: "学习组", friends: "好友与私聊", storage: "云端学习进度" };
+      if (feature) {
+        document.getElementById("level").textContent = `${featureNames[feature] || "该功能"}暂未开放`;
+        fetch("/api/features").then(response => response.json()).then(result => {
+          const item = (result.data || []).find(entry => (entry.featureKey || entry.feature_key) === feature);
+          if (item && item.reason) document.getElementById("message").textContent = item.reason;
+        }).catch(() => {});
+      }
     </script>
   </body>
 </html>

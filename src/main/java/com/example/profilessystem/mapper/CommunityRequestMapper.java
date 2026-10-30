@@ -22,4 +22,7 @@ public interface CommunityRequestMapper {
 
     @Update("UPDATE community_request SET status=#{status}, reviewed_at=CURRENT_TIMESTAMP WHERE id=#{id}")
     int updateStatus(@Param("id") long id, @Param("status") int status);
+
+    @Select("SELECT id, username, request_type, name, contact, category, message, status, created_at, reviewed_at FROM community_request WHERE id=#{id}")
+    CommunityRequest findById(long id);
 }

@@ -53,19 +53,19 @@
   </style></head>
   <body>
     <main class="shell">
-      <section class="intro"><div class="brand"><span class="mark">P</span><span>ProfilesSystem</span></div><h1>找回你的<br />登录方式。</h1><p>根据你还记得的信息选择一种方式。涉及邀请码重置的申请需要管理员审核。</p></section>
+      <section class="intro"><div class="brand"><span class="mark">P</span><span>ProfilesSystem</span></div><h1>找回你的<br />登录方式。</h1><p>根据你还记得的信息选择一种方式。涉及身份码重置的申请需要管理员审核。</p></section>
       <section class="form">
         <p class="eyebrow">Account recovery</p><h2>找回登录信息</h2><p class="sub">请选择需要找回的内容</p>
-        <div class="tabs"><button class="tab active" data-panel="invitePanel" type="button">忘记邀请码</button><button class="tab" data-panel="passwordPanel" type="button">忘记密码</button><button class="tab" data-panel="accountPanel" type="button">忘记账号</button></div>
+        <div class="tabs"><button class="tab active" data-panel="invitePanel" type="button">忘记身份码</button><button class="tab" data-panel="passwordPanel" type="button">忘记密码</button><button class="tab" data-panel="accountPanel" type="button">忘记账号</button></div>
         <form class="panel active" id="invitePanel" data-endpoint="/api/recovery/invite">
           <label>账户名称<input name="username" required placeholder="请输入账户名称" /></label>
           <label>注册邮箱<input name="email" type="email" required placeholder="请输入注册时使用的邮箱" /></label>
-          <label>申请说明<textarea name="reason" maxlength="255" placeholder="请说明需要重置邀请码的原因"></textarea></label>
+          <label>申请说明<textarea name="reason" maxlength="255" placeholder="请说明需要重置身份码的原因"></textarea></label>
           <button class="submit" type="submit">提交重置申请</button>
         </form>
         <form class="panel" id="passwordPanel" data-endpoint="/api/recovery/password">
           <label>账户名称<input name="username" required placeholder="请输入账户名称" /></label>
-          <label>邀请码<input name="code" required placeholder="请输入当前邀请码" /></label>
+          <label>身份码<input name="code" required placeholder="请输入当前身份码" /></label>
           <label>新密码<input name="password" type="password" minlength="6" required placeholder="请设置至少 6 位的新密码" /></label>
           <label>确认新密码<input name="confirmPassword" type="password" minlength="6" required placeholder="请再次输入新密码" /></label>
           <button class="submit" type="submit">重置密码</button>

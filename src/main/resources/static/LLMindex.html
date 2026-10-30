@@ -24,10 +24,14 @@
       .intro p { color: #64748b; font-size: 13px; line-height: 1.75; }
       .status { display: inline-flex; align-items: center; gap: 7px; margin-top: 16px; padding: 8px 10px; border-radius: 10px; color: #64748b; background: #f1f5f9; font-size: 11px; }
       .status::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: #f59e0b; }
+      .quota { margin-top: 12px; padding: 11px 12px; border: 1px solid #dbe4ff; border-radius: 12px; color: #4f46e5; background: #f8faff; font-size: 12px; line-height: 1.6; }
       .chat { display: flex; height: min(650px, calc(100vh - 150px)); min-height: 520px; flex-direction: column; overflow: hidden; }
       .chat-head { display: flex; align-items: center; justify-content: space-between; padding: 18px 22px; border-bottom: 1px solid #e8edf7; background: #ffffffa8; }
       .chat-head strong { font-size: 15px; }
       .chat-head span { color: #94a3b8; font-size: 11px; }
+      .chat-head-actions { display: flex; align-items: center; gap: 10px; }
+      .clear-chat { border: 1px solid #c7d2fe; border-radius: 9px; padding: 6px 9px; color: #4f46e5; background: #eef2ff; font: inherit; font-size: 11px; font-weight: 800; cursor: pointer; }
+      .clear-chat:hover { color: #fff; background: #6366f1; box-shadow: 0 6px 14px #6366f144; }
       .messages { flex: 1; min-height: 0; padding: 24px; overflow-y: auto; overscroll-behavior: contain; scrollbar-width: thin; scrollbar-color: #c7d2fe transparent; }
       .messages::-webkit-scrollbar { width: 7px; }
       .messages::-webkit-scrollbar-thumb { border-radius: 99px; background: #c7d2fe; }
@@ -42,6 +46,9 @@
       .composer input:focus { border-color: #818cf8; box-shadow: 0 0 0 4px #818cf81c; }
       .composer button { padding: 0 18px; border: 0; border-radius: 12px; color: #fff; background: #4f46e5; font: inherit; font-size: 13px; font-weight: 800; cursor: pointer; }
       .composer button:hover { background: #4338ca; }
+      .composer button:disabled { opacity: .6; cursor: wait; }
+      .typing { color: #6366f1 !important; animation: llmPulse 1.2s ease-in-out infinite; }
+      @keyframes llmPulse { 0%, 100% { opacity: .45; } 50% { opacity: 1; } }
       @media (max-width: 700px) { .page { width: min(100% - 22px, 600px); padding-top: 18px; } .layout { grid-template-columns: 1fr; } .intro { padding: 20px; } .assistant-icon { display: inline-grid; margin: 0 12px 0 0; vertical-align: middle; } .intro h1 { display: inline; font-size: 23px; } .intro p { margin-bottom: 0; } .chat { height: 540px; min-height: 0; } .message { max-width: 92%; } }
     </style>
     <style id="profiles-motion">
@@ -67,17 +74,18 @@
           <div class="assistant-icon">✦</div>
           <p class="eyebrow">Your study copilot</p>
           <h1>LLM 学习助手</h1>
-          <p>遇到知识点、代码问题或学习路线疑惑，都可以先把问题放在这里。真正的 AI 接口正在路上，先让界面和你熟悉一下。</p>
-          <div class="status">演示界面 · 接口待接入</div>
+          <p id="assistantDescription">遇到知识点、代码问题或学习路线疑惑，都可以先把问题放在这里。正在检查模型服务状态。</p>
+          <div class="status" id="assistantStatus">正在检测模型配置…</div>
+          <div class="quota" id="quotaStatus">正在读取今日 token 额度…</div>
         </aside>
         <section class="chat" aria-label="AI 对话窗口">
-          <div class="chat-head"><strong>和学习助手聊聊</strong><span>ProfilesSystem LLM</span></div>
+          <div class="chat-head"><strong>和学习助手聊聊</strong><div class="chat-head-actions"><span id="connectionStatus">正在检测模型…</span><button class="clear-chat" id="clearChat" type="button">清空对话</button></div></div>
           <div class="messages" id="messages">
-            <div class="message"><div class="bubble-icon">✦</div><div class="bubble">你好！我是你的学习助手。后端接口接入后，我就可以帮你拆解知识点、分析代码和规划学习路线啦。</div></div>
+            <div class="message"><div class="bubble-icon">✦</div><div class="bubble" id="welcomeMessage">你好！我是你的学习助手。正在检查后端模型服务状态。</div></div>
             <div class="message user"><div class="bubble-icon">我</div><div class="bubble">那现在可以先做什么？</div></div>
             <div class="message"><div class="bubble-icon">✦</div><div class="bubble">可以先在下方输入一个问题，体验一下对话布局。现在我会先把你的问题记在这里，等真正的 AI 服务上线再认真回答～</div></div>
           </div>
-          <form class="composer" id="composer"><input id="prompt" type="text" placeholder="输入你想问的问题…" autocomplete="off" /><button type="submit">发送</button></form>
+          <form class="composer" id="composer"><input id="prompt" type="text" maxlength="4000" placeholder="输入你想问的问题…" autocomplete="off" /><button id="sendButton" type="submit">发送</button></form>
         </section>
       </section>
     </main>
@@ -109,22 +117,82 @@
       const composer = document.getElementById("composer");
       const prompt = document.getElementById("prompt");
       const messages = document.getElementById("messages");
-      composer.addEventListener("submit", (event) => {
+      const sendButton = document.getElementById("sendButton");
+      const connectionStatus = document.getElementById("connectionStatus");
+      const clearChat = document.getElementById("clearChat");
+      const initialMessages = messages.innerHTML;
+      let modelConfigured = false;
+      const quotaStatus = document.getElementById("quotaStatus");
+
+      async function loadQuota() {
+        try {
+          const response = await fetch("/api/llm/quota", { credentials: "same-origin" });
+          const result = await response.json();
+          if (result.code !== 200) throw new Error(result.message || "额度读取失败");
+          quotaStatus.textContent = `今日额度：${result.data.remainingTokens.toLocaleString()} / ${result.data.quotaTokens.toLocaleString()} token · ${result.data.level === 2 ? "内部" : result.data.level === 1 ? "关联" : "游客"}`;
+        } catch (error) { quotaStatus.textContent = "token 额度暂不可用"; }
+      }
+
+      async function detectModelStatus() {
+        try {
+          const response = await fetch("/api/llm/status", { credentials: "same-origin" });
+          const result = await response.json();
+          if (result.code !== 200) throw new Error(result.message || "状态读取失败");
+          modelConfigured = Boolean(result.data.configured);
+          connectionStatus.textContent = result.data.configured ? "已检测到模型配置" : "演示模式 · 等待接入";
+          connectionStatus.title = result.data.configured ? "后端已检测到模型服务配置，聊天服务待切换" : "未检测到 LLM_API_KEY 和 LLM_BASE_URL";
+          document.getElementById("assistantStatus").textContent = result.data.configured ? "已检测到模型配置" : "演示界面 · 接口待接入";
+          document.getElementById("assistantDescription").textContent = result.data.configured ? "模型服务配置已经就绪，发送问题后会由后端统一转发。" : "当前是后端联调模式，模型服务配置完成后会自动切换。";
+          document.getElementById("welcomeMessage").textContent = result.data.configured ? "模型配置已经检测到。你可以先描述目标、上下文和遇到的问题。" : "你好！我是你的学习助手。当前处于后端联调模式，先熟悉一下对话界面吧。";
+        } catch (error) {
+          connectionStatus.textContent = "状态未知";
+          document.getElementById("assistantStatus").textContent = "模型状态未知";
+        }
+      }
+
+      function appendMessage(text, type) {
+        const item = document.createElement("div");
+        item.className = "message " + (type === "user" ? "user" : "assistant");
+        item.innerHTML = `<div class="bubble-icon">${type === "user" ? "我" : "✦"}</div><div class="bubble"></div>`;
+        item.querySelector(".bubble").textContent = text;
+        messages.appendChild(item);
+        messages.scrollTop = messages.scrollHeight;
+        return item;
+      }
+
+      composer.addEventListener("submit", async (event) => {
         event.preventDefault();
         const text = prompt.value.trim();
         if (!text) return;
-        const userMessage = document.createElement("div");
-        userMessage.className = "message user";
-        userMessage.innerHTML = `<div class="bubble-icon">我</div><div class="bubble"></div>`;
-        userMessage.querySelector(".bubble").textContent = text;
-        messages.appendChild(userMessage);
+        appendMessage(text, "user");
         prompt.value = "";
-        const placeholder = document.createElement("div");
-        placeholder.className = "message";
-        placeholder.innerHTML = '<div class="bubble-icon">✦</div><div class="bubble">收到啦！AI 接口接入后，我会在这里回答你。</div>';
-        messages.appendChild(placeholder);
-        messages.scrollTop = messages.scrollHeight;
+        sendButton.disabled = true;
+        prompt.disabled = true;
+        connectionStatus.textContent = "正在思考…";
+        connectionStatus.classList.add("typing");
+        try {
+          const response = await fetch("/api/llm/chat", { method: "POST", headers: { "Content-Type": "application/json" }, credentials: "same-origin", body: JSON.stringify({ message: text }) });
+          const result = await response.json();
+          if (result.code === 401) { window.location.replace("login.html?redirect=LLMindex.html"); return; }
+          if (result.code !== 200 || !result.data) throw new Error(result.message || "助手暂时无法回复");
+          appendMessage(result.data.reply, "assistant");
+          await loadQuota();
+          connectionStatus.textContent = result.data.mode === "demo" ? "演示模式 · 等待接入" : "模型服务在线"
+          document.getElementById("assistantStatus").textContent = result.data.mode === "demo" ? "演示界面 · 接口待接入" : "模型服务在线";
+        } catch (error) {
+          appendMessage("这次请求没有成功：" + (error.message || "请稍后重试"), "assistant");
+          connectionStatus.textContent = "连接异常";
+          document.getElementById("assistantStatus").textContent = "模型服务连接异常";
+        } finally {
+          sendButton.disabled = false;
+          prompt.disabled = false;
+          connectionStatus.classList.remove("typing");
+          prompt.focus();
+        }
       });
+      clearChat.addEventListener("click", () => { messages.innerHTML = initialMessages; connectionStatus.textContent = modelConfigured ? "已检测到模型配置" : "演示模式 · 等待接入"; prompt.focus(); });
+      detectModelStatus();
+      loadQuota();
       ensureLogin();
     </script>
   </body>

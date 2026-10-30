@@ -5,6 +5,8 @@ import com.example.profilessystem.entity.CommunityMessage;
 import com.example.profilessystem.mapper.CommunityRequestMapper;
 import com.example.profilessystem.mapper.CommunityMessageMapper;
 import com.example.profilessystem.mapper.UserMapper;
+import com.example.profilessystem.mapper.NotificationMapper;
+import com.example.profilessystem.entity.Notification;
 import com.example.profilessystem.result.Result;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,11 +21,13 @@ public class CommunityRequestService {
     private final CommunityRequestMapper mapper;
     private final CommunityMessageMapper messageMapper;
     private final UserMapper userMapper;
+    private final NotificationMapper notificationMapper;
 
-    public CommunityRequestService(CommunityRequestMapper mapper, CommunityMessageMapper messageMapper, UserMapper userMapper) {
+    public CommunityRequestService(CommunityRequestMapper mapper, CommunityMessageMapper messageMapper, UserMapper userMapper, NotificationMapper notificationMapper) {
         this.mapper = mapper;
         this.messageMapper = messageMapper;
         this.userMapper = userMapper;
+        this.notificationMapper = notificationMapper;
     }
 
     @Transactional
@@ -79,12 +83,27 @@ public class CommunityRequestService {
     @Transactional
     public Result<String> replyAsAdmin(long requestId, String content) {
         if (content == null || content.isBlank()) return Result.fail(Result.CODE_BAD_REQUEST, "回复内容不能为空");
+        CommunityRequest request = mapper.findById(requestId);
+        if (request == null) return Result.fail(Result.CODE_BAD_REQUEST, "申请不存在");
         CommunityMessage message = new CommunityMessage();
         message.setRequestId(requestId);
         message.setSenderType("ADMIN");
         message.setSenderName("管理员");
         message.setContent(content.trim());
-        return messageMapper.insert(message) == 1 ? Result.ok(null) : Result.fail("回复失败");
+        if (messageMapper.insert(message) != 1) return Result.fail("回复失败");
+        String username = request.getUsername();
+        if ((username == null || username.isBlank()) && request.getContact() != null) {
+            var user = userMapper.findByEmail(request.getContact());
+            username = user == null ? null : user.getUsername();
+        }
+        if (username != null && !username.isBlank()) {
+            Notification notification = new Notification();
+            notification.setUsername(username);
+            notification.setSenderName("管理员");
+            notification.setContent("关于你的" + ("join".equals(request.getRequestType()) ? "加入申请" : "问题反馈") + "：" + content.trim());
+            notificationMapper.insert(notification);
+        }
+        return Result.ok(null);
     }
 
     @Transactional
