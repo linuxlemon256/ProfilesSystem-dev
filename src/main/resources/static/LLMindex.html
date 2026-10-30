@@ -74,16 +74,14 @@
           <div class="assistant-icon">✦</div>
           <p class="eyebrow">Your study copilot</p>
           <h1>LLM 学习助手</h1>
-          <p id="assistantDescription">遇到知识点、代码问题或学习路线疑惑，都可以先把问题放在这里。正在检查模型服务状态。</p>
-          <div class="status" id="assistantStatus">正在检测模型配置…</div>
+          <p id="assistantDescription">知识点讲解、代码分析、学习规划和思路梳理，都可以交给学习助手一起完成。</p>
+          <div class="status" id="assistantStatus">LLM 学习助手已上线</div>
           <div class="quota" id="quotaStatus">正在读取今日 token 额度…</div>
         </aside>
         <section class="chat" aria-label="AI 对话窗口">
-          <div class="chat-head"><strong>和学习助手聊聊</strong><div class="chat-head-actions"><span id="connectionStatus">正在检测模型…</span><button class="clear-chat" id="clearChat" type="button">清空对话</button></div></div>
+          <div class="chat-head"><strong>和学习助手聊聊</strong><div class="chat-head-actions"><span id="connectionStatus">模型服务在线</span><button class="clear-chat" id="clearChat" type="button">清空对话</button></div></div>
           <div class="messages" id="messages">
-            <div class="message"><div class="bubble-icon">✦</div><div class="bubble" id="welcomeMessage">你好！我是你的学习助手。正在检查后端模型服务状态。</div></div>
-            <div class="message user"><div class="bubble-icon">我</div><div class="bubble">那现在可以先做什么？</div></div>
-            <div class="message"><div class="bubble-icon">✦</div><div class="bubble">可以先在下方输入一个问题，体验一下对话布局。现在我会先把你的问题记在这里，等真正的 AI 服务上线再认真回答～</div></div>
+            <div class="message"><div class="bubble-icon">✦</div><div class="bubble" id="welcomeMessage">你好，我是已经上线的 LLM 学习助手。告诉我你正在学习什么，或者把代码和问题直接发给我，我们现在就开始。</div></div>
           </div>
           <form class="composer" id="composer"><input id="prompt" type="text" maxlength="4000" placeholder="输入你想问的问题…" autocomplete="off" /><button id="sendButton" type="submit">发送</button></form>
         </section>
