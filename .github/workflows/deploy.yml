@@ -1,63 +1,40 @@
-name: Deploy to Server
+name: Deploy ProfilesSystem-dev to local VM
 
 on:
   push:
     branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
 
 jobs:
   deploy:
-    runs-on: ubuntu-latest
+    # 这个 Runner 必须安装在 192.168.3.10 虚拟机内。
+    # GitHub 托管 Runner 无法直接访问 192.168.x.x 内网地址。
+    runs-on: [self-hosted, linux, x64, profiles-dev]
+    env:
+      APP_DIR: /home/user/profiles-system-dev
+      SERVICE_NAME: profiles-system-dev
+
     steps:
-      - name: Setup Aliyun CLI
-        uses: JCBLE/setup-aliyun-cli@v1.1.0
-        with:
-          access-key-id: ${{ secrets.ALIYUN_ACCESS_KEY_ID }}
-          access-key-secret: ${{ secrets.ALIYUN_ACCESS_KEY_SECRET }}
-          region: ${{ secrets.ALIYUN_REGION }}
+      - name: Checkout
+        uses: actions/checkout@v4
 
-      - name: Get runner public IP
-        id: runner-ip
+      - name: Build application
         run: |
-          IP=$(curl -s https://api.ipify.org)
-          echo "ip=$IP" >> "$GITHUB_OUTPUT"
-          echo "Runner IP: $IP"
+          chmod +x mvnw
+          ./mvnw -B -DskipTests clean package
 
-      - name: Authorize security group for this runner
+      - name: Install application and restart service
+        shell: bash
         run: |
-          aliyun ecs AuthorizeSecurityGroup \
-            --version 2014-05-26 --force \
-            --RegionId "${{ secrets.ALIYUN_REGION }}" \
-            --SecurityGroupId "${{ secrets.ALIYUN_SECURITY_GROUP_ID }}" \
-            --IpProtocol tcp \
-            --PortRange 22/22 \
-            --SourceCidrIp "${{ steps.runner-ip.outputs.ip }}/32" \
-            --Priority 1
-
-      - name: Deploy via SSH
-        uses: appleboy/ssh-action@v1.2.0
-        with:
-          host: ${{ secrets.SERVER_HOST }}
-          username: ${{ secrets.SERVER_USER }}
-          key: ${{ secrets.DEPLOY_KEY }}
-          port: 22
-          script: |
-            set -e
-            export JAVA_HOME=/usr/lib/jvm/java-17-openjdk-17.0.20.0.8-1.1.0.2.1.al8.x86_64
-            export PATH=$JAVA_HOME/bin:$PATH
-            cd /opt/profiles-system
-            git pull origin main
-            ./mvnw clean package -DskipTests
-            systemctl restart profiles-system
-            sleep 5
-            systemctl is-active --quiet profiles-system
-
-      - name: Revoke security group rule (always)
-        if: always()
-        run: |
-          aliyun ecs RevokeSecurityGroup \
-            --version 2014-05-26 --force \
-            --RegionId "${{ secrets.ALIYUN_REGION }}" \
-            --SecurityGroupId "${{ secrets.ALIYUN_SECURITY_GROUP_ID }}" \
-            --IpProtocol tcp \
-            --PortRange 22/22 \
-            --SourceCidrIp "${{ steps.runner-ip.outputs.ip }}/32"
+          set -euo pipefail
+          mkdir -p "$APP_DIR"
+          ARTIFACT=$(find target -maxdepth 1 -type f -name '*.jar' ! -name '*.original' -print -quit)
+          test -n "$ARTIFACT"
+          install -m 0644 "$ARTIFACT" "$APP_DIR/app.jar"
+          sudo systemctl restart "$SERVICE_NAME"
+          sleep 5
+          sudo systemctl is-active --quiet "$SERVICE_NAME"
+          echo "ProfilesSystem-dev deployed successfully"
