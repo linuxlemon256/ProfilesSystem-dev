@@ -139,11 +139,12 @@
           const result = await response.json();
           if (result.code !== 200) throw new Error(result.message || "状态读取失败");
           modelConfigured = Boolean(result.data.configured);
-          connectionStatus.textContent = result.data.configured ? "已检测到模型配置" : "演示模式 · 等待接入";
-          connectionStatus.title = result.data.configured ? "后端已检测到模型服务配置，聊天服务待切换" : "未检测到 LLM_API_KEY 和 LLM_BASE_URL";
-          document.getElementById("assistantStatus").textContent = result.data.configured ? "已检测到模型配置" : "演示界面 · 接口待接入";
-          document.getElementById("assistantDescription").textContent = result.data.configured ? "模型服务配置已经就绪，发送问题后会由后端统一转发。" : "当前是后端联调模式，模型服务配置完成后会自动切换。";
-          document.getElementById("welcomeMessage").textContent = result.data.configured ? "模型配置已经检测到。你可以先描述目标、上下文和遇到的问题。" : "你好！我是你的学习助手。当前处于后端联调模式，先熟悉一下对话界面吧。";
+          const providerName = result.data.provider === "ollama" ? "Ollama 本机模型" : result.data.provider === "ollama_external" ? "Ollama 外接模型" : "OpenAPI 云端模型";
+          connectionStatus.textContent = result.data.configured ? `${providerName}在线` : "模型服务未配置";
+          connectionStatus.title = result.data.configured ? `${result.data.modelName || "模型"} · ${result.data.baseUrl || ""}` : "请由管理员配置模型接入方式、地址和模型名称";
+          document.getElementById("assistantStatus").textContent = result.data.configured ? providerName : "模型服务尚未配置";
+          document.getElementById("assistantDescription").textContent = result.data.configured ? `当前使用 ${providerName}，问题会由后端统一转发。` : "管理员完成模型配置后即可开始真实对话。";
+          document.getElementById("welcomeMessage").textContent = result.data.configured ? `你好！当前由 ${providerName} 为你提供学习辅助。请描述目标、上下文和遇到的问题。` : "你好！模型服务暂未配置，请稍后再来。";
         } catch (error) {
           connectionStatus.textContent = "状态未知";
           document.getElementById("assistantStatus").textContent = "模型状态未知";
@@ -177,8 +178,9 @@
           if (result.code !== 200 || !result.data) throw new Error(result.message || "助手暂时无法回复");
           appendMessage(result.data.reply, "assistant");
           await loadQuota();
-          connectionStatus.textContent = result.data.mode === "demo" ? "演示模式 · 等待接入" : "模型服务在线"
-          document.getElementById("assistantStatus").textContent = result.data.mode === "demo" ? "演示界面 · 接口待接入" : "模型服务在线";
+          const providerName = result.data.provider === "ollama" ? "Ollama 本机模型" : result.data.provider === "ollama_external" ? "Ollama 外接模型" : "OpenAPI 云端模型";
+          connectionStatus.textContent = `${providerName}在线`;
+          document.getElementById("assistantStatus").textContent = providerName;
         } catch (error) {
           appendMessage("这次请求没有成功：" + (error.message || "请稍后重试"), "assistant");
           connectionStatus.textContent = "连接异常";
@@ -190,7 +192,7 @@
           prompt.focus();
         }
       });
-      clearChat.addEventListener("click", () => { messages.innerHTML = initialMessages; connectionStatus.textContent = modelConfigured ? "已检测到模型配置" : "演示模式 · 等待接入"; prompt.focus(); });
+      clearChat.addEventListener("click", () => { messages.innerHTML = initialMessages; detectModelStatus(); prompt.focus(); });
       detectModelStatus();
       loadQuota();
       ensureLogin();

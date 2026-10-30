@@ -415,8 +415,9 @@
       }
       .llm-settings-form { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:12px; margin-top:16px; padding:16px; border:1px solid #dbe4ff; border-radius:16px; background:linear-gradient(135deg,#f8faff,#fff7fc); }
       .llm-settings-form label { display:flex; flex-direction:column; gap:7px; color:#475569; font-size:12px; font-weight:800; }
-      .llm-settings-form input { min-height:42px; padding:0 12px; border:1px solid #cbd5f5; border-radius:10px; outline:none; color:#172554; background:#fff; font:inherit; font-weight:500; }
-      .llm-settings-form input:focus { border-color:#8b5cf6; box-shadow:0 0 0 4px #8b5cf622; }
+      .llm-settings-form input, .llm-settings-form select { min-height:42px; padding:0 12px; border:1px solid #cbd5f5; border-radius:10px; outline:none; color:#172554; background:#fff; font:inherit; font-weight:500; }
+      .llm-settings-form input:focus, .llm-settings-form select:focus { border-color:#8b5cf6; box-shadow:0 0 0 4px #8b5cf622; }
+      .llm-provider-tip { grid-column:1/-1; margin:0; padding:10px 12px; border-radius:10px; color:#475569; background:#eef2ff; font-size:12px; line-height:1.6; }
       .llm-settings-form .wide { grid-column:span 2; }
       .llm-settings-actions { grid-column:1/-1; display:flex; gap:10px; flex-wrap:wrap; }
       .llm-settings-actions button { min-height:42px; padding:0 16px; border-radius:10px; cursor:pointer; font-weight:800; }
@@ -553,9 +554,11 @@
           <label>关联 token <input id="llmLevel1" type="number" min="0" required></label>
           <label>内部 token <input id="llmLevel2" type="number" min="0" required></label>
           <label>刷新间隔（小时）<input id="llmInterval" type="number" min="1" required></label>
+          <label>接入方式<select id="llmProvider"><option value="openapi">OpenAI 兼容 API</option><option value="ollama">Ollama 本机服务</option><option value="ollama_external">Ollama 外接服务</option></select></label>
           <label>模型名称<input id="llmModel" maxlength="120" placeholder="系统默认：deepseek-flash"></label>
           <label>模型服务地址<input id="llmBaseUrl" maxlength="255" placeholder="系统默认：环境变量 LLM_BASE_URL"></label>
-          <label class="wide">API Key（留空表示保留原值）<input id="llmApiKey" type="password" autocomplete="new-password"></label>
+          <label class="wide" id="llmApiKeyField">API Key（留空表示保留原值）<input id="llmApiKey" type="password" autocomplete="new-password"></label>
+          <p class="llm-provider-tip" id="llmProviderTip"></p>
           <div class="llm-settings-actions"><button class="approve" type="submit">保存配置</button><button class="view" id="llmRefresh" type="button">立即刷新所有额度</button></div>
         </form>
       </section>
@@ -598,6 +601,25 @@
       });
       const groupRows = document.getElementById("groupRows");
       const llmSettingsForm = document.getElementById("llmSettingsForm");
+      const llmProvider = document.getElementById("llmProvider");
+      function updateLlmProviderFields(resetAddress = false) {
+        const localOllama = llmProvider.value === "ollama";
+        const externalOllama = llmProvider.value === "ollama_external";
+        const ollama = localOllama || externalOllama;
+        const baseUrlInput = document.getElementById("llmBaseUrl");
+        document.getElementById("llmApiKeyField").style.display = ollama ? "none" : "flex";
+        baseUrlInput.disabled = localOllama;
+        if (localOllama) baseUrlInput.value = "http://127.0.0.1:11434";
+        if (resetAddress && externalOllama && baseUrlInput.value === "http://127.0.0.1:11434") baseUrlInput.value = "";
+        baseUrlInput.placeholder = externalOllama ? "例如：http://192.168.3.20:11434" : localOllama ? "http://127.0.0.1:11434" : "例如：https://api.deepseek.com";
+        document.getElementById("llmModel").placeholder = ollama ? "例如：deepseek-r1:7b" : "例如：deepseek-chat";
+        document.getElementById("llmProviderTip").textContent = localOllama
+          ? "Ollama 运行在 ProfilesSystem-dev 所在服务器上，固定访问 127.0.0.1:11434，不需要 API Key。"
+          : externalOllama
+            ? "Ollama 运行在另一台设备上，请填写该设备可被服务器访问的地址；外接设备需要允许局域网连接。"
+            : "OpenAI 兼容 API 支持 DeepSeek 等兼容 /chat/completions 的云端服务，需要服务地址和 API Key。";
+      }
+      llmProvider.addEventListener("change", () => updateLlmProviderFields(true));
       async function loadLlmSettings() {
         try {
           const data = await request("/api/llm/admin/settings");
@@ -605,15 +627,18 @@
           document.getElementById("llmLevel1").value = data.level1Tokens;
           document.getElementById("llmLevel2").value = data.level2Tokens;
           document.getElementById("llmInterval").value = data.refreshIntervalHours;
+          llmProvider.value = data.provider || "openapi";
           document.getElementById("llmModel").value = data.modelName || "";
           document.getElementById("llmBaseUrl").value = data.baseUrl || "";
-          document.getElementById("llmConfigState").textContent = data.apiKeyConfigured ? "已配置 API Key" : "未配置 API Key";
+          updateLlmProviderFields();
+          const providerName = data.provider === "ollama" ? "本机 Ollama" : data.provider === "ollama_external" ? "外接 Ollama" : "OpenAPI";
+          document.getElementById("llmConfigState").textContent = data.configured ? `${providerName} 已就绪` : "模型服务未配置完整";
         } catch (error) { document.getElementById("llmConfigState").textContent = "读取失败"; showToast("读取 LLM 配置失败：" + error.message); }
       }
       llmSettingsForm.addEventListener("submit", async event => {
         event.preventDefault();
         try {
-          await request("/api/llm/admin/settings", { method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify({ level0Tokens:Number(document.getElementById("llmLevel0").value), level1Tokens:Number(document.getElementById("llmLevel1").value), level2Tokens:Number(document.getElementById("llmLevel2").value), refreshIntervalHours:Number(document.getElementById("llmInterval").value), modelName:document.getElementById("llmModel").value, baseUrl:document.getElementById("llmBaseUrl").value, apiKey:document.getElementById("llmApiKey").value }) });
+          await request("/api/llm/admin/settings", { method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify({ level0Tokens:Number(document.getElementById("llmLevel0").value), level1Tokens:Number(document.getElementById("llmLevel1").value), level2Tokens:Number(document.getElementById("llmLevel2").value), refreshIntervalHours:Number(document.getElementById("llmInterval").value), provider:llmProvider.value, modelName:document.getElementById("llmModel").value, baseUrl:document.getElementById("llmBaseUrl").value, apiKey:document.getElementById("llmApiKey").value }) });
           document.getElementById("llmApiKey").value = ""; showToast("LLM 配置已保存"); await loadLlmSettings();
         } catch (error) { showToast("保存 LLM 配置失败：" + error.message); }
       });

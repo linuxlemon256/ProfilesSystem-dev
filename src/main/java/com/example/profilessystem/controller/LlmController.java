@@ -5,21 +5,21 @@ import com.example.profilessystem.entity.LlmChatBody;
 import com.example.profilessystem.result.Result;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.beans.factory.annotation.Value;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
+import com.example.profilessystem.server.LlmClientService;
 import com.example.profilessystem.server.LlmQuotaService;
 
 @RestController
 @RequestMapping("/api/llm")
 public class LlmController {
     private final LlmQuotaService quotaService;
-    public LlmController(LlmQuotaService quotaService) { this.quotaService = quotaService; }
-    @Value("${LLM_API_KEY:}")
-    private String apiKey;
-    @Value("${LLM_BASE_URL:}")
-    private String baseUrl;
+    private final LlmClientService llmClientService;
+    public LlmController(LlmQuotaService quotaService, LlmClientService llmClientService) {
+        this.quotaService = quotaService;
+        this.llmClientService = llmClientService;
+    }
 
     @GetMapping("/status")
     public Result<Map<String, Object>> status(HttpSession session) {
@@ -28,9 +28,9 @@ public class LlmController {
         Map<String, Object> data = new LinkedHashMap<>();
         data.put("configured", configured);
         data.put("mode", configured ? "connected" : "demo");
-        data.put("provider", configured ? "external" : "placeholder");
-        data.put("modelName", quotaService.adminSettings().getData().get("modelName"));
-        data.put("baseUrl", quotaService.adminSettings().getData().get("baseUrl"));
+        data.put("provider", quotaService.provider());
+        data.put("modelName", quotaService.modelName());
+        data.put("baseUrl", quotaService.baseUrl());
         return Result.ok(data);
     }
 
@@ -47,12 +47,19 @@ public class LlmController {
         Result<Map<String,Object>> quota = quotaService.consume(username.toString(), estimatedTokens);
         if (quota.getCode() != Result.CODE_SUCCESS) return quota;
 
-        // 当前为后端联调回复；以后只需要在这里接入本地或云端模型服务。
-        Map<String, Object> data = new LinkedHashMap<>();
-        data.put("reply", "已收到你的问题：\n\n" + message + "\n\n这是 LLM 学习助手的后端联调回复。模型服务接入后，我会在这里给出真正的知识讲解、代码分析和学习建议。\n\n你可以继续补充：目标、当前代码、报错信息或希望达到的结果。" );
-        data.put("mode", "demo");
-        data.put("username", username.toString());
-        return Result.ok(data);
+        try {
+            LlmClientService.ChatResult response = llmClientService.chat(message);
+            Map<String, Object> data = new LinkedHashMap<>();
+            data.put("reply", response.reply());
+            data.put("mode", "connected");
+            data.put("provider", quotaService.provider());
+            data.put("modelName", quotaService.modelName());
+            data.put("totalTokens", response.totalTokens());
+            data.put("username", username.toString());
+            return Result.ok(data);
+        } catch (IllegalStateException exception) {
+            return Result.fail(Result.CODE_ERROR, exception.getMessage());
+        }
     }
 
     @GetMapping("/quota")
