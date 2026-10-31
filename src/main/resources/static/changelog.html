@@ -61,6 +61,8 @@
       .release:nth-child(7) { animation-delay: .52s; }
       .release:nth-child(8) { animation-delay: .60s; }
       .release:nth-child(9) { animation-delay: .68s; }
+      .release:nth-child(10) { animation-delay: .76s; }
+      .release:nth-child(11) { animation-delay: .84s; }
       @keyframes rise { from { opacity: 0; transform: translateY(22px); } to { opacity: 1; transform: translateY(0); } }
       @media (max-width: 620px) {
         .page { width: min(100% - 24px, 520px); padding-top: 18px; }
@@ -98,6 +100,24 @@
       </section>
 
       <section class="timeline" aria-label="版本记录">
+        <article class="release">
+          <div class="release-head">
+            <div><h2>v0.2.3</h2><p class="release-note">学习导向切换 · 路线和专业现在一键直达。</p></div>
+            <time datetime="2026-10-31">2026 · 10 · 31</time>
+          </div>
+          <div class="changes">
+            <div class="change"><span class="tag improve">优化</span><p>将学习导向下拉框改为双按钮切换，补充选中反馈、方向键操作和移动端等宽布局。</p></div>
+          </div>
+        </article>
+        <article class="release">
+          <div class="release-head">
+            <div><h2>v0.2.2</h2><p class="release-note">专业入口微调 · 更多专业回到标题身边。</p></div>
+            <time datetime="2026-10-31">2026 · 10 · 31</time>
+          </div>
+          <div class="changes">
+            <div class="change"><span class="tag improve">优化</span><p>将“更多专业”按钮移动到“专业方向”标题右侧，并让窄屏布局自然换行。</p></div>
+          </div>
+        </article>
         <article class="release">
           <div class="release-head">
             <div><h2>v0.2.1</h2><p class="release-note">内容包按钮修复 · 文件选择入口恢复完整交互。</p></div>
