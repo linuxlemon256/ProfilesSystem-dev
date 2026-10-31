@@ -1,0 +1,145 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="搜索并浏览 ProfilesSystem 中的更多专业方向" />
+    <title>更多专业 · ProfilesSystem</title>
+    <style>
+      :root {
+        font-family: Inter, "PingFang SC", "Microsoft YaHei", sans-serif;
+        color: #172554;
+        background: #eef3ff;
+      }
+      * { box-sizing: border-box; }
+      body {
+        min-height: 100vh;
+        margin: 0;
+        background:
+          radial-gradient(circle at 8% 5%, #c7d2fe 0, transparent 28%),
+          radial-gradient(circle at 94% 86%, #a5f3fc 0, transparent 25%),
+          linear-gradient(135deg, #eef3ff, #f8fafc 58%, #f1edff);
+      }
+      button, input { font: inherit; }
+      .page { width: min(1120px, calc(100% - 40px)); margin: auto; padding: 26px 0 68px; }
+      .topbar { display: flex; align-items: center; justify-content: space-between; gap: 20px; }
+      .brand { display: flex; align-items: center; gap: 10px; color: inherit; font-weight: 800; text-decoration: none; }
+      .mark { display: grid; width: 36px; height: 36px; place-items: center; border-radius: 11px; color: #111a3b; background: linear-gradient(135deg, #9ca9ff, #62e4d5); }
+      .back { color: #4f46e5; font-size: 13px; font-weight: 800; text-decoration: none; }
+      .back:hover { color: #0891b2; }
+      .hero { padding: 76px 0 38px; }
+      .eyebrow { margin: 0 0 12px; color: #4f46e5; font-size: 12px; font-weight: 900; letter-spacing: .16em; text-transform: uppercase; }
+      h1 { margin: 0; font-size: clamp(40px, 6vw, 68px); line-height: 1.04; letter-spacing: -.06em; }
+      .lead { max-width: 690px; margin: 18px 0 0; color: #64748b; font-size: 15px; line-height: 1.8; }
+      .search-panel { position: sticky; z-index: 10; top: 14px; display: flex; align-items: center; gap: 12px; margin: 8px 0 28px; padding: 12px; border: 1px solid #dce5f5; border-radius: 18px; background: #ffffffeb; box-shadow: 0 15px 38px #30458e18; backdrop-filter: blur(14px); }
+      .search-icon { display: grid; width: 42px; height: 42px; flex: none; place-items: center; border-radius: 13px; color: #4338ca; background: #e0e7ff; font-size: 18px; }
+      .search-input { min-width: 0; width: 100%; padding: 11px 4px; border: 0; outline: 0; color: #172554; background: transparent; font-size: 15px; }
+      .search-input::placeholder { color: #94a3b8; }
+      .clear { display: none; flex: none; padding: 8px 11px; border: 0; border-radius: 10px; color: #475569; background: #f1f5f9; cursor: pointer; font-size: 12px; font-weight: 800; }
+      .clear.visible { display: block; }
+      .result-bar { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 15px; }
+      .result-bar h2 { margin: 0; font-size: 19px; }
+      .result-count { color: #64748b; font-size: 12px; font-weight: 700; }
+      .grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 17px; }
+      .card { position: relative; display: flex; min-height: 225px; flex-direction: column; padding: 23px; border: 1px solid #dce5f5; border-radius: 20px; background: #ffffffd9; box-shadow: 0 12px 34px #30458e12; transition: transform .25s ease, border-color .25s ease, box-shadow .25s ease; animation: rise .55s cubic-bezier(.2,.8,.2,1) both; }
+      .card:hover { transform: translateY(-6px); border-color: #a5b4fc; box-shadow: 0 20px 42px #30458e22; }
+      .card[hidden] { display: none; }
+      .icon { display: grid; width: 44px; height: 44px; place-items: center; border-radius: 14px; color: #4338ca; background: #e0e7ff; font-size: 21px; }
+      .category { position: absolute; top: 20px; right: 20px; padding: 5px 9px; border-radius: 999px; color: #0f766e; background: #ccfbf1; font-size: 10px; font-weight: 900; }
+      .card h3 { margin: 21px 0 8px; font-size: 19px; }
+      .card p { margin: 0; color: #64748b; font-size: 13px; line-height: 1.7; }
+      .card a { margin-top: auto; padding-top: 18px; color: #4f46e5; font-size: 13px; font-weight: 900; text-decoration: none; }
+      .card a:hover { color: #0891b2; }
+      .empty { display: none; padding: 56px 24px; border: 1px dashed #c7d2fe; border-radius: 20px; color: #64748b; text-align: center; background: #ffffff96; }
+      .empty.visible { display: block; }
+      .empty strong { display: block; margin-bottom: 8px; color: #334155; font-size: 17px; }
+      .foot { margin-top: 42px; color: #94a3b8; font-size: 12px; }
+      @keyframes rise { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: translateY(0); } }
+      @media (max-width: 840px) { .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+      @media (max-width: 560px) {
+        .page { width: min(100% - 24px, 500px); padding-top: 18px; }
+        .hero { padding: 58px 0 32px; }
+        .grid { grid-template-columns: 1fr; }
+        .search-panel { top: 8px; }
+      }
+      @media (prefers-reduced-motion: reduce) { .card { animation: none; transition: none; } }
+    </style>
+  </head>
+  <body>
+    <main class="page">
+      <header class="topbar">
+        <a class="brand" href="learnServer.html"><span class="mark">P</span><span>ProfilesSystem</span></a>
+        <a class="back" href="learnIndex.html">← 返回学习空间</a>
+      </header>
+
+      <section class="hero" aria-labelledby="page-title">
+        <p class="eyebrow">Explore majors</p>
+        <h1 id="page-title">发现更多专业</h1>
+        <p class="lead">不必在长列表里迷路。输入专业名称、学科类别或感兴趣的关键词，就能快速找到方向。</p>
+      </section>
+
+      <div class="search-panel" role="search">
+        <span class="search-icon" aria-hidden="true">⌕</span>
+        <input class="search-input" id="majorSearch" type="search" placeholder="搜索专业，例如：电子、建筑、设计、能源……" autocomplete="off" aria-label="搜索专业" />
+        <button class="clear" id="clearSearch" type="button">清除</button>
+      </div>
+
+      <div class="result-bar">
+        <h2>专业列表</h2>
+        <span class="result-count" id="resultCount" aria-live="polite"></span>
+      </div>
+
+      <section class="grid" id="majorGrid" aria-label="专业搜索结果">
+        <article class="card" data-search="计算机类 软件工程 网络 人工智能 数据 编程"><span class="category">工学</span><div class="icon">💻</div><h3>计算机类</h3><p>软件、网络、数据与人工智能等方向，适合喜欢逻辑、系统和创造数字世界的你。</p><a href="learncomputerindex.html">进入专业学习 →</a></article>
+        <article class="card" data-search="机械类 机械工程 制造 机电 车辆 工业设计"><span class="category">工学</span><div class="icon">⚙</div><h3>机械类</h3><p>研究结构、运动、制造与工程实现，从一张图纸走向真实机器。</p><a href="learnmechanicalindex.html">进入专业学习 →</a></article>
+        <article class="card" data-search="自动化类 控制 机器人 传感器 工业控制"><span class="category">工学</span><div class="icon">⏱</div><h3>自动化类</h3><p>连接控制理论、传感器和工业系统，让设备更聪明地协同工作。</p><a href="learnautomationindex.html">进入专业学习 →</a></article>
+        <article class="card" data-search="电子信息类 电子 信息 通信 微电子 集成电路 人工智能"><span class="category">工学</span><div class="icon">⌁</div><h3>电子信息类</h3><p>涵盖电子技术、通信、信号处理、集成电路与人工智能等专业方向。</p><a href="learnMajorCategory.html?category=electronics">进入专业学习 →</a></article>
+        <article class="card" data-search="电气类 电气工程 电力 电网 电机"><span class="category">工学</span><div class="icon">ϟ</div><h3>电气类</h3><p>从电机、电力电子到电力系统，探索能源如何被转换和输送。</p><a href="learnMajorCategory.html?category=electrical">进入专业学习 →</a></article>
+        <article class="card" data-search="土木类 土木工程 道路 桥梁 地下 建设"><span class="category">工学</span><div class="icon">▥</div><h3>土木类</h3><p>关注建筑、道路、桥梁与地下工程的设计、施工和安全。</p><a href="learnMajorCategory.html?category=civil">进入专业学习 →</a></article>
+        <article class="card" data-search="建筑类 建筑学 城乡规划 风景园林 空间"><span class="category">工学</span><div class="icon">⌂</div><h3>建筑类</h3><p>把空间、功能、审美与城市环境放在一起思考和设计。</p><a href="learnMajorCategory.html?category=architecture">进入专业学习 →</a></article>
+        <article class="card" data-search="材料类 材料科学 金属 高分子 无机 新材料"><span class="category">工学</span><div class="icon">◇</div><h3>材料类</h3><p>研究材料的结构、性能、制备与应用，为工程提供可靠基础。</p><a href="learnMajorCategory.html?category=materials">进入专业学习 →</a></article>
+        <article class="card" data-search="能源动力类 能源 动力 热能 新能源 储能"><span class="category">工学</span><div class="icon">☀</div><h3>能源动力类</h3><p>探索热、动力与新能源系统，理解能量如何高效流动。</p><a href="learnMajorCategory.html?category=energy">进入专业学习 →</a></article>
+        <article class="card" data-search="交通运输类 交通 运输 轨道 航运 物流"><span class="category">工学</span><div class="icon">⇄</div><h3>交通运输类</h3><p>研究人员与货物如何安全、高效地在复杂系统中流动。</p><a href="learnMajorCategory.html?category=transportation">进入专业学习 →</a></article>
+        <article class="card" data-search="航空航天类 飞行器 航空 宇航 推进"><span class="category">工学</span><div class="icon">✈</div><h3>航空航天类</h3><p>围绕飞行器设计、动力、控制与空间探索展开学习。</p><a href="learnMajorCategory.html?category=aerospace">进入专业学习 →</a></article>
+        <article class="card" data-search="环境科学与工程类 环境 生态 水处理 污染"><span class="category">工学</span><div class="icon">♧</div><h3>环境科学与工程类</h3><p>用科学与工程方法理解环境问题，并寻找可持续解决方案。</p><a href="learnMajorCategory.html?category=environment">进入专业学习 →</a></article>
+        <article class="card" data-search="生物工程类 生物制药 合成生物学 生物制造 生物工程"><span class="category">工学</span><div class="icon">⌬</div><h3>生物工程类</h3><p>融合生物学、工程学与制造技术，生物制药属于这一专业类别。</p><a href="learnMajorCategory.html?category=bioengineering">进入专业学习 →</a></article>
+        <article class="card" data-search="数学类 数学 应用数学 统计 计算"><span class="category">理学</span><div class="icon">∑</div><h3>数学类</h3><p>训练抽象、推理与建模能力，也是许多技术领域的共同语言。</p><a href="learnMajorCategory.html?category=mathematics">进入专业学习 →</a></article>
+        <article class="card" data-search="经济学类 经济 数字经济 能源经济 劳动经济"><span class="category">经济学</span><div class="icon">↗</div><h3>经济学类</h3><p>理解资源配置、经济运行和公共决策背后的规律。</p><a href="learnMajorCategory.html?category=economics">进入专业学习 →</a></article>
+        <article class="card" data-search="工商管理类 管理 会计 市场营销 人力资源 审计"><span class="category">管理学</span><div class="icon">▦</div><h3>工商管理类</h3><p>从组织、运营、财务和市场角度理解企业如何运转。</p><a href="learnMajorCategory.html?category=business">进入专业学习 →</a></article>
+        <article class="card" data-search="设计学类 视觉传达 产品设计 环境设计 艺术"><span class="category">艺术学</span><div class="icon">✦</div><h3>设计学类</h3><p>以视觉、产品与空间为媒介，把想法转化为清晰的体验。</p><a href="learnMajorCategory.html?category=design">进入专业学习 →</a></article>
+      </section>
+
+      <div class="empty" id="emptyState" role="status"><strong>暂时没有找到这个专业</strong>换个名称或关键词试试，也许它只是换了个称呼。</div>
+      <p class="foot">ProfilesSystem · 更多专业会随着内容完善继续加入</p>
+    </main>
+
+    <script>
+      const searchInput = document.getElementById("majorSearch");
+      const clearButton = document.getElementById("clearSearch");
+      const cards = [...document.querySelectorAll("#majorGrid .card")];
+      const resultCount = document.getElementById("resultCount");
+      const emptyState = document.getElementById("emptyState");
+
+      function updateResults() {
+        const keyword = searchInput.value.trim().toLocaleLowerCase("zh-CN");
+        let visible = 0;
+        cards.forEach((card) => {
+          const matched = !keyword || card.dataset.search.toLocaleLowerCase("zh-CN").includes(keyword);
+          card.hidden = !matched;
+          if (matched) visible += 1;
+        });
+        resultCount.textContent = keyword ? `找到 ${visible} 个专业` : `共 ${cards.length} 个专业`;
+        clearButton.classList.toggle("visible", Boolean(keyword));
+        emptyState.classList.toggle("visible", visible === 0);
+      }
+
+      searchInput.addEventListener("input", updateResults);
+      clearButton.addEventListener("click", () => {
+        searchInput.value = "";
+        updateResults();
+        searchInput.focus();
+      });
+      updateResults();
+    </script>
+  </body>
+</html>
