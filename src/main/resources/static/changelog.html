@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="ProfilesSystem 开发版更新日志" />
+    <title>更新日志 · ProfilesSystem</title>
+    <style>
+      :root {
+        color-scheme: light;
+        font-family: Inter, "PingFang SC", "Microsoft YaHei", sans-serif;
+        color: #172554;
+        background: #eef3ff;
+      }
+      * { box-sizing: border-box; }
+      html { scroll-behavior: smooth; }
+      body {
+        min-height: 100vh;
+        margin: 0;
+        background:
+          radial-gradient(circle at 8% 8%, #c7d2fe 0, transparent 27%),
+          radial-gradient(circle at 94% 85%, #a5f3fc 0, transparent 24%),
+          linear-gradient(135deg, #eef3ff, #f8fafc 58%, #f1edff);
+      }
+      a { color: inherit; }
+      .page { width: min(960px, calc(100% - 40px)); margin: auto; padding: 26px 0 70px; }
+      .topbar { display: flex; align-items: center; justify-content: space-between; gap: 20px; }
+      .brand { display: flex; align-items: center; gap: 10px; font-weight: 800; text-decoration: none; }
+      .mark { display: grid; width: 36px; height: 36px; place-items: center; border-radius: 11px; color: #111a3b; background: linear-gradient(135deg, #9ca9ff, #62e4d5); }
+      .back { color: #4f46e5; font-size: 13px; font-weight: 800; text-decoration: none; }
+      .back:hover { color: #0891b2; }
+      .hero { padding: 86px 0 54px; }
+      .eyebrow { margin: 0 0 12px; color: #4f46e5; font-size: 12px; font-weight: 800; letter-spacing: .16em; text-transform: uppercase; }
+      h1 { margin: 0; font-size: clamp(42px, 7vw, 72px); line-height: 1.04; letter-spacing: -.065em; }
+      .lead { max-width: 650px; margin: 20px 0 0; color: #64748b; font-size: 16px; line-height: 1.85; }
+      .summary { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 26px; }
+      .summary span { padding: 8px 12px; border: 1px solid #dbe4f3; border-radius: 999px; color: #475569; background: #ffffffb8; font-size: 12px; font-weight: 700; }
+      .timeline { position: relative; padding-left: 31px; }
+      .timeline::before { content: ""; position: absolute; top: 8px; bottom: 16px; left: 8px; width: 2px; background: linear-gradient(#6366f1, #22d3ee 75%, transparent); }
+      .release { position: relative; margin-bottom: 25px; padding: 28px; border: 1px solid #dce5f5; border-radius: 22px; background: #ffffffdf; box-shadow: 0 16px 40px #30458e14; }
+      .release::before { content: ""; position: absolute; top: 34px; left: -30px; width: 13px; height: 13px; border: 4px solid #eef3ff; border-radius: 50%; background: #4f46e5; box-shadow: 0 0 0 3px #818cf84a; }
+      .release-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; }
+      .release h2 { margin: 0; font-size: 23px; letter-spacing: -.02em; }
+      .release time { flex: none; color: #64748b; font-size: 12px; font-weight: 700; }
+      .release-note { margin: 8px 0 0; color: #64748b; font-size: 13px; line-height: 1.7; }
+      .changes { display: grid; gap: 13px; margin-top: 24px; }
+      .change { display: grid; grid-template-columns: 56px 1fr; gap: 14px; align-items: start; }
+      .tag { display: inline-grid; min-height: 27px; place-items: center; border-radius: 8px; font-size: 11px; font-weight: 900; }
+      .tag.new { color: #3730a3; background: #e0e7ff; }
+      .tag.improve { color: #0f766e; background: #ccfbf1; }
+      .tag.fix { color: #b45309; background: #fef3c7; }
+      .change p { margin: 2px 0 0; color: #475569; font-size: 14px; line-height: 1.75; }
+      .foot { margin: 42px 0 0 31px; color: #94a3b8; font-size: 12px; }
+      .release { opacity: 0; animation: rise .65s cubic-bezier(.2,.8,.2,1) forwards; }
+      .release:nth-child(2) { animation-delay: .12s; }
+      @keyframes rise { from { opacity: 0; transform: translateY(22px); } to { opacity: 1; transform: translateY(0); } }
+      @media (max-width: 620px) {
+        .page { width: min(100% - 24px, 520px); padding-top: 18px; }
+        .hero { padding: 60px 0 42px; }
+        .timeline { padding-left: 22px; }
+        .timeline::before { left: 5px; }
+        .release { padding: 22px 18px; }
+        .release::before { left: -24px; }
+        .release-head { display: block; }
+        .release time { display: block; margin-top: 7px; }
+        .change { grid-template-columns: 1fr; gap: 7px; }
+        .tag { width: 56px; }
+        .foot { margin-left: 22px; }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        html { scroll-behavior: auto; }
+        .release { opacity: 1; animation: none; }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="page">
+      <header class="topbar">
+        <a class="brand" href="learnServer.html"><span class="mark">P</span><span>ProfilesSystem</span></a>
+        <a class="back" href="learnServer.html">← 返回系统主页</a>
+      </header>
+
+      <section class="hero" aria-labelledby="page-title">
+        <p class="eyebrow">What's new</p>
+        <h1 id="page-title">更新日志</h1>
+        <p class="lead">记录每一次看得见的变化，也保留系统逐步成长的轨迹。开发版会额外记录内部服务与实验功能。</p>
+        <div class="summary" aria-label="本次更新概览">
+          <span>专业学习重构</span><span>LLM 多接入方式</span><span>交流中心</span><span>内部存储</span>
+        </div>
+      </section>
+
+      <section class="timeline" aria-label="版本记录">
+        <article class="release">
+          <div class="release-head">
+            <div><h2>v0.0.1</h2><p class="release-note">首个日志版本 · 重新梳理学习入口、内容分类和内部协作能力。</p></div>
+            <time datetime="2026-10-31">2026 · 10 · 31</time>
+          </div>
+          <div class="changes">
+            <div class="change"><span class="tag new">新增</span><p>建立统一版本号、项目更新日志和站内更新日志，后续每次修改都将留下记录。</p></div>
+            <div class="change"><span class="tag new">新增</span><p>计算机类、机械类和自动化类三个专业入口；可在“路线方向”和“具体专业”之间切换查看内容。</p></div>
+            <div class="change"><span class="tag new">新增</span><p>专业、路线和资源的通用说明页，尚未单独设计的内容也能保持完整、明确的跳转路径。</p></div>
+            <div class="change"><span class="tag new">新增</span><p>LLM 学习助手支持 OpenAI 兼容接口、本地 Ollama 与外接 Ollama；交流中心加入通知、学习组、好友和管理员消息。</p></div>
+            <div class="change"><span class="tag new">新增</span><p>内部存储云盘正式界面，提供目录筛选、文件搜索、新建文件夹、本地文件选择和容量概览。</p></div>
+            <div class="change"><span class="tag improve">优化</span><p>拆分机械类与自动化类，补充通用就业路线，并统一各页面的动画、等级徽章和响应式布局。</p></div>
+            <div class="change"><span class="tag fix">修复</span><p>修正部分登录跳转、权限检查、功能开关拦截，以及窄屏下的遮挡和布局错位。</p></div>
+          </div>
+        </article>
+      </section>
+
+      <p class="foot">ProfilesSystem-dev · 日志将随重要功能更新持续补充</p>
+    </main>
+  </body>
+</html>
