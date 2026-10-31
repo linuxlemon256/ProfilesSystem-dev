@@ -375,7 +375,7 @@
 
           const success = Number(result.code) === 200;
           if (success) {
-          const destination = ["LLMindex.html", "projectDemo.html", "storageDemo.html", "communication.html", "groups.html", "notification.html", "feedback.html", "joinUs.html"].includes(requestedRedirect)
+          const destination = ["LLMindex.html", "projectDemo.html", "storage.html", "communication.html", "groups.html", "notification.html", "feedback.html", "joinUs.html"].includes(requestedRedirect)
               ? requestedRedirect
               : "learnIndex.html";
             window.location.replace(destination);

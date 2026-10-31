@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+    <title>存储云盘 · ProfilesSystem</title>
+    <style>
+      :root { font-family: Inter, "PingFang SC", "Microsoft YaHei", sans-serif; color: #172554; background: #f5f7ff; }
+      * { box-sizing: border-box; }
+      body { min-height: 100vh; margin: 0; background: radial-gradient(circle at 8% 5%, #ddd6fe 0, transparent 28%), radial-gradient(circle at 94% 92%, #bfdbfe 0, transparent 25%), linear-gradient(135deg, #f7f3ff, #f8fafc 60%, #eff6ff); }
+      button, input { font: inherit; }
+      .page { width: min(1180px, calc(100% - 32px)); margin: auto; padding: 24px 0 42px; }
+      .topbar { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 34px; }
+      .brand { display: flex; align-items: center; gap: 10px; font-weight: 900; }
+      .mark { display: grid; width: 36px; height: 36px; place-items: center; border-radius: 12px; color: #fff; background: linear-gradient(135deg, #7c3aed, #4f46e5); box-shadow: 0 8px 18px #6d28d933; }
+      .top-actions { display: flex; align-items: center; gap: 12px; }
+      .back { color: #4f46e5; font-size: 13px; font-weight: 800; text-decoration: none; }
+      .level { display: inline-flex; align-items: center; gap: 6px; padding: 6px 10px; border: 1px solid #c084fc; border-radius: 999px; color: #7e22ce; background: linear-gradient(110deg, #faf5ff, #e9d5ff 38%, #fff 50%, #e9d5ff 62%, #faf5ff); background-size: 230% 100%; animation: shimmer 3.2s ease-in-out infinite; font-size: 11px; font-weight: 900; }
+      .level::before { content: ""; width: 5px; height: 5px; border-radius: 50%; background: currentColor; }
+      .hero { display: flex; align-items: end; justify-content: space-between; gap: 20px; margin-bottom: 22px; }
+      .eyebrow { margin: 0 0 8px; color: #7c3aed; font-size: 11px; font-weight: 900; letter-spacing: .15em; text-transform: uppercase; }
+      h1 { margin: 0; font-size: clamp(32px, 5vw, 52px); letter-spacing: -.06em; }
+      .hero p { max-width: 620px; margin: 10px 0 0; color: #64748b; line-height: 1.7; }
+      .workspace { display: grid; grid-template-columns: 230px minmax(0, 1fr); gap: 18px; }
+      .sidebar, .content { border: 1px solid #e3e8f5; border-radius: 22px; background: #ffffffdd; box-shadow: 0 18px 45px #30458e12; backdrop-filter: blur(12px); }
+      .sidebar { padding: 18px; }
+      .nav-title { margin: 3px 8px 10px; color: #94a3b8; font-size: 10px; font-weight: 900; letter-spacing: .12em; text-transform: uppercase; }
+      .nav-item { display: flex; width: 100%; align-items: center; gap: 10px; padding: 11px 12px; border: 0; border-radius: 11px; color: #475569; background: transparent; font-size: 13px; font-weight: 750; text-align: left; cursor: pointer; transition: .2s; }
+      .nav-item:hover { color: #4f46e5; background: #f5f3ff; }
+      .nav-item.active { color: #4338ca; background: #eef2ff; box-shadow: inset 3px 0 #6366f1; }
+      .quota { margin-top: 26px; padding: 15px; border: 1px solid #e9d5ff; border-radius: 15px; background: linear-gradient(145deg, #faf5ff, #fff); }
+      .quota-head { display: flex; justify-content: space-between; gap: 8px; color: #64748b; font-size: 11px; }
+      .quota strong { color: #312e81; }
+      .progress { height: 7px; margin: 11px 0 8px; overflow: hidden; border-radius: 99px; background: #ede9fe; }
+      .progress i { display: block; width: 0%; height: 100%; border-radius: inherit; background: linear-gradient(90deg, #6366f1, #a855f7); transition: width .3s; }
+      .quota small { color: #94a3b8; }
+      .content { min-width: 0; padding: 22px; }
+      .toolbar { display: flex; align-items: center; justify-content: space-between; gap: 14px; margin-bottom: 18px; }
+      .search { position: relative; flex: 1; max-width: 420px; }
+      .search span { position: absolute; top: 50%; left: 13px; transform: translateY(-50%); color: #94a3b8; }
+      .search input { width: 100%; min-height: 42px; padding: 0 14px 0 38px; border: 1px solid #dce5f5; border-radius: 12px; outline: none; color: #172554; background: #fff; }
+      .search input:focus { border-color: #818cf8; box-shadow: 0 0 0 4px #6366f11c; }
+      .toolbar-actions { display: flex; gap: 9px; }
+      .action { min-height: 42px; padding: 0 14px; border: 1px solid #d8def1; border-radius: 11px; color: #4338ca; background: #fff; font-size: 12px; font-weight: 850; cursor: pointer; transition: .2s; }
+      .action:hover { transform: translateY(-2px); border-color: #a5b4fc; }
+      .action.primary { border-color: transparent; color: #fff; background: linear-gradient(135deg, #6366f1, #7c3aed); box-shadow: 0 8px 18px #6366f12e; }
+      .content-head { display: flex; align-items: end; justify-content: space-between; gap: 16px; margin-bottom: 12px; }
+      .content-head h2 { margin: 0; font-size: 19px; }
+      .content-head span { color: #94a3b8; font-size: 12px; }
+      .file-list { overflow: hidden; border: 1px solid #e8ecf5; border-radius: 15px; }
+      .file-row { display: grid; grid-template-columns: minmax(220px, 1.5fr) 120px 150px 42px; align-items: center; gap: 12px; min-height: 66px; padding: 10px 14px; border-top: 1px solid #eef1f7; background: #fff; transition: .2s; }
+      .file-row:first-child { border-top: 0; }
+      .file-row:hover { background: #fafaff; }
+      .file-main { display: flex; min-width: 0; align-items: center; gap: 12px; }
+      .file-icon { display: grid; flex: none; width: 40px; height: 40px; place-items: center; border-radius: 12px; color: #4f46e5; background: #eef2ff; font-size: 18px; }
+      .file-name { min-width: 0; }
+      .file-name strong { display: block; overflow: hidden; font-size: 13px; text-overflow: ellipsis; white-space: nowrap; }
+      .file-name small, .file-meta { color: #94a3b8; font-size: 11px; }
+      .more { border: 0; color: #64748b; background: transparent; font-size: 20px; cursor: pointer; }
+      .empty { padding: 48px 20px; color: #94a3b8; text-align: center; background: #fff; }
+      .toast { position: fixed; right: 22px; bottom: 22px; padding: 12px 16px; border-radius: 12px; color: #fff; background: #172554; box-shadow: 0 16px 35px #17255433; opacity: 0; transform: translateY(12px); pointer-events: none; transition: .25s; }
+      .toast.show { opacity: 1; transform: none; }
+      .auth-pending .page { visibility: hidden; }
+      @keyframes shimmer { 0%,35% { background-position: 180% 0; } 70%,100% { background-position: -80% 0; } }
+      @media (max-width: 800px) { .workspace { grid-template-columns: 1fr; } .sidebar { display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px; } .nav-title, .quota { grid-column: 1 / -1; } }
+      @media (max-width: 620px) { .page { width: min(100% - 20px, 560px); padding-top: 16px; } .hero, .toolbar { align-items: stretch; flex-direction: column; } .search { max-width: none; } .toolbar-actions { display: grid; grid-template-columns: 1fr 1fr; } .file-row { grid-template-columns: minmax(0, 1fr) 34px; } .file-meta { display: none; } .top-actions .level { display: none; } }
+      @media (prefers-reduced-motion: reduce) { .level { animation: none; } * { transition: none !important; } }
+    </style>
+  </head>
+  <body class="auth-pending">
+    <main class="page">
+      <header class="topbar"><div class="brand"><span class="mark">☁</span><span>ProfilesSystem · 存储云盘</span></div><div class="top-actions"><span class="level">内部</span><a class="back" href="learnIndex.html">← 返回学习空间</a></div></header>
+      <section class="hero"><div><p class="eyebrow">Private learning cloud</p><h1>存储云盘</h1><p>集中管理学习资料、项目文件和个人归档，让常用内容始终留在一个清楚的位置。</p></div></section>
+      <section class="workspace">
+        <aside class="sidebar"><p class="nav-title">文件空间</p><button class="nav-item active" data-view="all">▦　全部文件</button><button class="nav-item" data-view="recent">◷　最近使用</button><button class="nav-item" data-view="starred">☆　我的收藏</button><button class="nav-item" data-view="trash">♲　回收站</button><div class="quota"><div class="quota-head"><span>空间使用</span><strong id="quotaText">0 B / 10 GB</strong></div><div class="progress"><i id="quotaBar"></i></div><small>内部账户专属空间</small></div></aside>
+        <div class="content">
+          <div class="toolbar"><label class="search"><span>⌕</span><input id="searchInput" type="search" placeholder="搜索文件和文件夹" /></label><div class="toolbar-actions"><button class="action" id="newFolder" type="button">＋ 新建文件夹</button><button class="action primary" id="uploadButton" type="button">↑ 选择文件</button><input id="filePicker" type="file" multiple hidden /></div></div>
+          <div class="content-head"><h2 id="viewTitle">全部文件</h2><span id="fileCount">2 项</span></div>
+          <div class="file-list" id="fileList"></div>
+        </div>
+      </section>
+    </main>
+    <div class="toast" id="toast"></div>
+    <script>
+      const initialFiles = [
+        { name: "学习资料", type: "folder", size: "—", modified: "今天", icon: "▤", detail: "资料文件夹", recent: true, starred: true, bytes: 0 },
+        { name: "样本项目", type: "folder", size: "—", modified: "今天", icon: "◈", detail: "项目文件夹", recent: true, starred: false, bytes: 0 },
+      ];
+      let files = [...initialFiles];
+      let currentView = "all";
+      const fileList = document.getElementById("fileList");
+      const searchInput = document.getElementById("searchInput");
+      const fileCount = document.getElementById("fileCount");
+      function renderFiles() {
+        const keyword = searchInput.value.trim().toLowerCase();
+        const visible = files.filter(file => file.name.toLowerCase().includes(keyword) && (currentView === "all" || currentView === "recent" && file.recent || currentView === "starred" && file.starred || currentView === "trash" && file.trashed));
+        fileCount.textContent = visible.length + " 项";
+        fileList.innerHTML = visible.length ? visible.map(file => `<div class="file-row"><div class="file-main"><span class="file-icon">${file.icon}</span><div class="file-name"><strong></strong><small>${file.detail}</small></div></div><span class="file-meta">${file.size}</span><span class="file-meta">${file.modified}</span><button class="more" type="button" aria-label="更多操作">⋯</button></div>`).join("") : '<div class="empty">这里还没有匹配的内容</div>';
+        fileList.querySelectorAll(".file-row").forEach((row, index) => row.querySelector("strong").textContent = visible[index].name);
+        const usedBytes = files.reduce((total, file) => total + (file.bytes || 0), 0);
+        document.getElementById("quotaText").textContent = usedBytes < 1024 * 1024 ? Math.round(usedBytes / 1024) + " KB / 10 GB" : (usedBytes / 1024 / 1024).toFixed(1) + " MB / 10 GB";
+        document.getElementById("quotaBar").style.width = Math.min(100, usedBytes / (10 * 1024 * 1024 * 1024) * 100) + "%";
+      }
+      function showToast(message) { const toast = document.getElementById("toast"); toast.textContent = message; toast.classList.add("show"); setTimeout(() => toast.classList.remove("show"), 1800); }
+      searchInput.addEventListener("input", renderFiles);
+      document.querySelectorAll(".nav-item").forEach(button => button.addEventListener("click", () => { document.querySelectorAll(".nav-item").forEach(item => item.classList.remove("active")); button.classList.add("active"); currentView = button.dataset.view; document.getElementById("viewTitle").textContent = button.textContent.trim(); renderFiles(); }));
+      document.getElementById("newFolder").addEventListener("click", () => { const name = prompt("请输入文件夹名称："); if (!name || !name.trim()) return; files.unshift({ name: name.trim().slice(0, 80), type: "folder", size: "—", modified: "刚刚", icon: "▤", detail: "文件夹", recent: true, starred: false, bytes: 0 }); currentView = "all"; document.querySelectorAll(".nav-item").forEach(item => item.classList.toggle("active", item.dataset.view === "all")); document.getElementById("viewTitle").textContent = "全部文件"; renderFiles(); showToast("文件夹已创建"); });
+      document.getElementById("uploadButton").addEventListener("click", () => document.getElementById("filePicker").click());
+      document.getElementById("filePicker").addEventListener("change", event => { Array.from(event.target.files).forEach(file => files.unshift({ name: file.name, type: "file", size: file.size < 1024 * 1024 ? Math.max(1, Math.round(file.size / 1024)) + " KB" : (file.size / 1024 / 1024).toFixed(1) + " MB", modified: "刚刚", icon: "◫", detail: "本次会话文件", recent: true, starred: false, bytes: file.size })); currentView = "all"; renderFiles(); if (event.target.files.length) showToast("已加入 " + event.target.files.length + " 个文件"); event.target.value = ""; });
+      renderFiles();
+      fetch("/api/user/level", { credentials: "same-origin" }).then(async response => {
+        if (response.status === 401) { location.replace("login.html?redirect=storage.html"); return; }
+        if (!response.ok) throw new Error("access denied");
+        const result = await response.json();
+        if (Number(result.code) !== 200 || Number(result.data) < 2) { location.replace("accessDenied.html?required=2"); return; }
+        document.body.classList.remove("auth-pending");
+      }).catch(() => location.replace("accessDenied.html?required=2"));
+    </script>
+  </body>
+</html>
