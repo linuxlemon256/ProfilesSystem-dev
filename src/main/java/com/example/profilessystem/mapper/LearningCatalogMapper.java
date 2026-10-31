@@ -20,6 +20,9 @@ public interface LearningCatalogMapper {
     @Select("SELECT id,category_id,code,name,program_type,summary,enabled,sort_order FROM major WHERE category_id=#{categoryId} AND enabled=1 ORDER BY sort_order,id")
     List<Major> findMajors(Long categoryId);
 
-    @Select("SELECT id,category_id,major_id,title,description,icon,target_url,required_level,status,sort_order FROM learning_route WHERE category_id=#{categoryId} AND status='PUBLISHED' AND required_level<=#{level} ORDER BY sort_order,id")
+    @Select("SELECT id,category_id,major_id,title,description,icon,target_url,required_level,status,enabled,sort_order " +
+            "FROM learning_route WHERE category_id=#{categoryId} AND status='PUBLISHED' AND enabled=1 " +
+            "AND required_level<=#{level} AND (major_id IS NULL OR EXISTS " +
+            "(SELECT 1 FROM major WHERE major.id=learning_route.major_id AND major.enabled=1)) ORDER BY sort_order,id")
     List<LearningRoute> findRoutes(@Param("categoryId") Long categoryId, @Param("level") int level);
 }

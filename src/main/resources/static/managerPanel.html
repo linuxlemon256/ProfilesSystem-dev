@@ -455,6 +455,42 @@
       .transfer-preview { flex: 1 1 280px; min-height: 42px; padding: 11px 13px; border: 1px dashed #cbd5e1; border-radius: 11px; color: #64748b; background: #f8fafc; font-size: 11px; line-height: 1.55; }
       @media(max-width:900px){.transfer-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
       @media(max-width:520px){.transfer-grid{grid-template-columns:1fr}.transfer-actions{align-items:stretch}.transfer-button{width:100%}.transfer-preview{flex-basis:100%}}
+      .access-manager { padding: 18px 20px 20px; }
+      .access-manager-tools { display: flex; margin-bottom: 14px; align-items: center; flex-wrap: wrap; gap: 10px; }
+      .access-search { flex: 1 1 260px; min-height: 40px; padding: 0 12px; border: 1px solid #dbe4ff; border-radius: 10px; color: var(--ink); background: #fff; outline: none; }
+      .access-search:focus { border-color: #818cf8; box-shadow: 0 0 0 4px #6366f11c; }
+      .access-note { color: #64748b; font-size: 11px; line-height: 1.6; }
+      .access-tree { display: grid; gap: 11px; }
+      .access-category { overflow: hidden; border: 1px solid #dbe4ff; border-radius: 15px; background: #fff; transition: opacity .2s, border-color .2s; }
+      .access-category.parent-closed { border-color: #fecaca; background: #fffafa; }
+      .access-category > summary { display: flex; min-height: 64px; padding: 13px 15px; align-items: center; gap: 12px; list-style: none; cursor: pointer; }
+      .access-category > summary::-webkit-details-marker { display: none; }
+      .access-chevron { color: #6366f1; transition: transform .2s; }
+      .access-category[open] .access-chevron { transform: rotate(90deg); }
+      .access-category-title { flex: 1; min-width: 0; }
+      .access-category-title strong { display: block; color: #172554; font-size: 14px; }
+      .access-category-title small { display: block; margin-top: 4px; color: #94a3b8; font-size: 10px; }
+      .access-state { padding: 5px 8px; border-radius: 999px; font-size: 10px; font-weight: 900; }
+      .access-state.open { color: #047857; background: #d1fae5; }
+      .access-state.closed { color: #b91c1c; background: #fee2e2; }
+      .access-sections { display: grid; padding: 0 15px 15px; gap: 13px; border-top: 1px solid #eef2ff; }
+      .access-group { padding-top: 13px; }
+      .access-group-head { display: flex; margin-bottom: 8px; align-items: center; justify-content: space-between; color: #475569; font-size: 11px; font-weight: 900; }
+      .access-items { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 7px; }
+      .access-item { display: flex; min-height: 48px; padding: 9px 10px; align-items: center; gap: 9px; border: 1px solid #edf0f7; border-radius: 10px; background: #f8fafc; }
+      .access-item.inherited-closed { opacity: .58; }
+      .access-item-copy { flex: 1; min-width: 0; }
+      .access-item-copy strong { display: block; overflow: hidden; color: #334155; font-size: 12px; text-overflow: ellipsis; white-space: nowrap; }
+      .access-item-copy small { display: block; margin-top: 2px; overflow: hidden; color: #94a3b8; font-size: 9px; text-overflow: ellipsis; white-space: nowrap; }
+      .access-empty { padding: 13px; border-radius: 10px; color: #94a3b8; background: #f8fafc; font-size: 11px; text-align: center; }
+      .access-toggle { position: relative; width: 42px; height: 24px; flex: none; }
+      .access-toggle input { position: absolute; width: 1px; height: 1px; opacity: 0; }
+      .access-toggle span { position: absolute; inset: 0; border-radius: 99px; background: #cbd5e1; cursor: pointer; transition: .2s; }
+      .access-toggle span::before { content: ""; position: absolute; width: 18px; height: 18px; left: 3px; top: 3px; border-radius: 50%; background: #fff; box-shadow: 0 2px 6px #17255433; transition: .2s; }
+      .access-toggle input:checked + span { background: linear-gradient(135deg, #2563eb, #8b5cf6); }
+      .access-toggle input:checked + span::before { transform: translateX(18px); }
+      .access-toggle input:focus-visible + span { outline: 3px solid #818cf866; outline-offset: 2px; }
+      @media(max-width:760px){.access-items{grid-template-columns:1fr}.access-category > summary{padding:11px}.access-manager{padding:14px}}
     </style>
     <style id="profiles-motion">
     @keyframes profilesPageIn { from { opacity: 0; } to { opacity: 1; } }
@@ -585,6 +621,16 @@
         <div id="featureSwitches" class="feature-switches"><div class="empty">正在读取功能状态…</div></div>
       </section>
       <section class="panel" style="margin-top:22px">
+        <div class="toolbar"><strong>学习内容开放设置</strong><span class="count" id="learningAccessState">正在读取层级…</span></div>
+        <div class="access-manager">
+          <div class="access-manager-tools">
+            <input class="access-search" id="learningAccessSearch" type="search" placeholder="搜索专业类别、具体专业、路线或学习资源" />
+            <span class="access-note">关闭上级会立即阻止全部下级访问，但不会覆盖下级各自的开关状态。</span>
+          </div>
+          <div class="access-tree" id="learningAccessTree"><div class="access-empty">正在读取学习内容…</div></div>
+        </div>
+      </section>
+      <section class="panel" style="margin-top:22px">
         <div class="toolbar"><strong>数据内容迁移</strong><span class="count" id="contentTransferState">正在读取内容概览…</span></div>
         <div class="transfer-body">
           <p class="transfer-notice">这里只迁移专业学习相关内容。导入采用“按内容标识合并”的方式，不会创建、删除或重命名任何数据结构，也不会接收 SQL 文件。</p>
@@ -691,6 +737,95 @@
           root.querySelectorAll("input[data-reason]").forEach(input => input.addEventListener("change", async () => { const toggle = root.querySelector(`[data-feature="${input.dataset.reason}"]`); try { await request(`/api/features/${input.dataset.reason}`, {method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({enabled:toggle.checked,reason:input.value})}); showToast("关闭原因已保存"); } catch(error) { showToast("保存关闭原因失败：" + error.message); } }));
         } catch (error) { document.getElementById("featureSwitches").innerHTML = `<div class="empty">读取功能开关失败：${escapeHtml(error.message)}</div>`; }
       }
+      const learningAccessTree = document.getElementById("learningAccessTree");
+      const learningAccessSearch = document.getElementById("learningAccessSearch");
+      let learningAccessCategories = [];
+
+      function accessItemHtml(item, type, parentEnabled) {
+        const effective = parentEnabled && item.enabled;
+        return `<div class="access-item ${parentEnabled ? "" : "inherited-closed"}">
+          <div class="access-item-copy"><strong title="${escapeHtml(item.name)}">${escapeHtml(item.name)}</strong><small>${escapeHtml(item.detail || "")}${!parentEnabled && item.enabled ? " · 随上级关闭" : ""}</small></div>
+          <span class="access-state ${effective ? "open" : "closed"}">${effective ? "开放" : "关闭"}</span>
+          <label class="access-toggle" title="${item.enabled ? "关闭" : "开放"}${escapeHtml(item.name)}">
+            <input type="checkbox" data-access-type="${type}" data-access-id="${item.id}" ${item.enabled ? "checked" : ""} />
+            <span></span>
+          </label>
+        </div>`;
+      }
+
+      function accessGroupHtml(title, items, type, parentEnabled) {
+        return `<section class="access-group"><div class="access-group-head"><span>${title}</span><span>${items.length} 项</span></div>
+          <div class="access-items">${items.length ? items.map(item => accessItemHtml(item, type, parentEnabled)).join("") : '<div class="access-empty">暂无内容</div>'}</div></section>`;
+      }
+
+      function renderLearningAccessTree() {
+        const query = learningAccessSearch.value.trim().toLowerCase();
+        const openSlugs = new Set(Array.from(learningAccessTree.querySelectorAll("details[open]")).map(item => item.dataset.slug));
+        const categories = learningAccessCategories.map(category => {
+          const allChildren = [...category.specificMajors, ...category.learningRoutes, ...category.learningResources];
+          const categoryMatch = (category.name + " " + category.slug).toLowerCase().includes(query);
+          const filterItems = items => !query || categoryMatch ? items : items.filter(item => (item.name + " " + (item.detail || "")).toLowerCase().includes(query));
+          const majors = filterItems(category.specificMajors);
+          const routes = filterItems(category.learningRoutes);
+          const resources = filterItems(category.learningResources);
+          const childMatch = !query || majors.length || routes.length || resources.length || allChildren.length === 0 && categoryMatch;
+          if (!categoryMatch && !childMatch) return "";
+          const shouldOpen = Boolean(query) || openSlugs.has(category.slug);
+          const total = category.specificMajors.length + category.learningRoutes.length + category.learningResources.length;
+          return `<details class="access-category ${category.enabled ? "" : "parent-closed"}" data-slug="${escapeHtml(category.slug)}" ${shouldOpen ? "open" : ""}>
+            <summary><span class="access-chevron">▶</span><div class="access-category-title"><strong>${escapeHtml(category.name)}专业</strong><small>${total} 项下级内容 · ${escapeHtml(category.slug)}</small></div>
+              <span class="access-state ${category.enabled ? "open" : "closed"}">${category.enabled ? "整类开放" : "整类关闭"}</span>
+              <label class="access-toggle" title="${category.enabled ? "关闭" : "开放"}${escapeHtml(category.name)}专业" onclick="event.stopPropagation()">
+                <input type="checkbox" data-access-type="category" data-access-id="${category.id}" ${category.enabled ? "checked" : ""} />
+                <span></span>
+              </label>
+            </summary>
+            <div class="access-sections">
+              ${accessGroupHtml("具体专业", majors, "major", category.enabled)}
+              ${accessGroupHtml("学习路线", routes, "route", category.enabled)}
+              ${accessGroupHtml("学习资源", resources, "resource", category.enabled)}
+            </div>
+          </details>`;
+        }).join("");
+        learningAccessTree.innerHTML = categories || '<div class="access-empty">没有找到符合条件的学习内容</div>';
+        document.getElementById("learningAccessState").textContent = `${learningAccessCategories.length} 个专业类别`;
+      }
+
+      async function loadLearningAccessTree() {
+        try {
+          const data = await request("/api/manager/learning-access");
+          learningAccessCategories = data.categories || [];
+          renderLearningAccessTree();
+        } catch (error) {
+          learningAccessTree.innerHTML = `<div class="access-empty">读取失败：${escapeHtml(error.message)}</div>`;
+          document.getElementById("learningAccessState").textContent = "读取失败";
+        }
+      }
+
+      learningAccessSearch.addEventListener("input", renderLearningAccessTree);
+      learningAccessTree.addEventListener("change", async event => {
+        const input = event.target.closest("input[data-access-type]");
+        if (!input) return;
+        const type = input.dataset.accessType;
+        if (type === "category" && !input.checked && !confirm("关闭整个专业类别后，其中的专业、路线和资源都会立即无法访问。确定继续吗？")) {
+          input.checked = true;
+          return;
+        }
+        input.disabled = true;
+        try {
+          await request(`/api/manager/learning-access/${type}/${input.dataset.accessId}`, {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ enabled: input.checked }),
+          });
+          showToast(input.checked ? "学习内容已开放" : "学习内容已关闭");
+          await loadLearningAccessTree();
+        } catch (error) {
+          input.checked = !input.checked;
+          input.disabled = false;
+          showToast("保存失败：" + error.message);
+        }
+      });
       const contentImportFile = document.getElementById("contentImportFile");
       const contentImportButton = document.getElementById("contentImport");
       const contentImportPreview = document.getElementById("contentImportPreview");
@@ -1113,6 +1248,7 @@
       loadGroupRequests();
       loadLlmSettings();
       loadFeatureSwitches();
+      loadLearningAccessTree();
       loadContentTransferOverview();
 
     </script>

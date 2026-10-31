@@ -17,6 +17,7 @@ public class LearningResource {
     private String resourceType;
     private int requiredLevel;
     private String status;
+    private boolean enabled = true;
     private String targetUrl;
     private String originalName;
     private String storageKey;
@@ -52,6 +53,8 @@ public class LearningResource {
     public void setRequiredLevel(int requiredLevel) { this.requiredLevel = requiredLevel; }
     public String getStatus() { return status; }
     public void setStatus(String status) { this.status = status; }
+    public boolean getEnabled() { return enabled; }
+    public void setEnabled(boolean enabled) { this.enabled = enabled; }
     public String getTargetUrl() { return targetUrl; }
     public void setTargetUrl(String targetUrl) { this.targetUrl = targetUrl; }
     public String getOriginalName() { return originalName; }

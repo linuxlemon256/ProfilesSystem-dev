@@ -1,0 +1,637 @@
+<!doctype html>
+<html lang="zh-CN">
+  <!--
+    ProfilesSystem 专业学习路线标准模板
+
+    使用方法：
+    1. 复制本文件，并将文件名中的 XXX 改为路线名称。
+    2. 搜索“[必须替换]”，完成页面名称、返回地址和本地存储标识配置。
+    3. 只在 [ANCHOR:ROADMAP] 区域编写阶段、模块和知识点。
+    4. stage.id、module.id 在同一路线内必须唯一，发布后不要随意修改，否则旧进度无法对应。
+    5. 不要把具体专业内容写入 CSS 或渲染函数；专业内容统一保留在 ROADMAP 中。
+
+    X 表示待填写内容，不是实际专业名称。
+  -->
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="X专业学习路线标准模板" />
+    <title>X专业通用就业学习路线 · ProfilesSystem</title>
+    <style>
+      :root {
+        --bg: #eef3ff;
+        --card: #ffffff;
+        --border: #dce5f5;
+        --text: #172554;
+        --muted: #64748b;
+        --primary: #2563eb;
+        --primary-soft: #e8efff;
+        --accent: #7c3aed;
+        --ok: #16a34a;
+        --shadow: 0 1px 3px #10182814, 0 8px 24px #1018280f;
+        --radius: 14px;
+        font-family: "Segoe UI", "Microsoft YaHei", system-ui, sans-serif;
+      }
+
+      * { box-sizing: border-box; }
+      html { scroll-behavior: smooth; }
+      body {
+        min-height: 100vh;
+        margin: 0;
+        color: var(--text);
+        background: linear-gradient(135deg, #eef3ff, #f8fafc 55%, #f1edff);
+        line-height: 1.6;
+      }
+      button, input, textarea { font: inherit; }
+
+      .hero {
+        padding: 28px 32px 22px;
+        color: #fff;
+        background: linear-gradient(135deg, #1e3a8a, #2563eb 55%, #7c3aed);
+      }
+      .hero-inner {
+        display: flex;
+        max-width: 1280px;
+        margin: 0 auto;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 24px;
+      }
+      .hero-copy { flex: 1 1 520px; }
+      .template-badge {
+        display: inline-flex;
+        margin-bottom: 10px;
+        padding: 5px 9px;
+        border: 1px solid #ffffff4d;
+        border-radius: 999px;
+        background: #ffffff1f;
+        font-size: 11px;
+        font-weight: 800;
+        letter-spacing: .08em;
+      }
+      h1 { margin: 0; font-size: clamp(24px, 4vw, 36px); letter-spacing: -.035em; }
+      .subtitle { max-width: 720px; margin: 8px 0 0; color: #dbeafe; font-size: 13px; }
+      .ring-wrap { display: flex; align-items: center; gap: 15px; }
+      .ring { position: relative; width: 104px; height: 104px; }
+      .ring svg { transform: rotate(-90deg); }
+      .ring-value { position: absolute; inset: 0; display: grid; place-content: center; text-align: center; }
+      .ring-value b { font-size: 23px; }
+      .ring-value span { font-size: 10px; opacity: .8; }
+      .hero-stats { display: grid; gap: 8px; }
+      .hero-stat { min-width: 112px; padding: 8px 12px; border: 1px solid #ffffff3d; border-radius: 10px; background: #ffffff1c; text-align: center; font-size: 11px; }
+      .hero-stat b { display: block; font-size: 15px; }
+      .hero-actions { display: flex; width: 100%; flex-wrap: wrap; gap: 9px; }
+      .button {
+        display: inline-flex;
+        min-height: 38px;
+        padding: 0 13px;
+        align-items: center;
+        justify-content: center;
+        border: 0;
+        border-radius: 9px;
+        color: var(--text);
+        background: #eef1f7;
+        font-size: 12px;
+        font-weight: 800;
+        text-decoration: none;
+        cursor: pointer;
+        transition: transform .2s, filter .2s;
+      }
+      .button:hover { transform: translateY(-2px); filter: brightness(.97); }
+      .button.primary { color: var(--primary); background: #fff; }
+      .button.danger { color: #fecaca; border: 1px solid #ef444466; background: #ef44442e; }
+
+      .layout {
+        display: grid;
+        grid-template-columns: 250px minmax(0, 1fr);
+        max-width: 1280px;
+        margin: 0 auto;
+        padding: 24px 20px 76px;
+        align-items: start;
+        gap: 22px;
+      }
+      .sidebar {
+        position: sticky;
+        top: 16px;
+        max-height: calc(100vh - 32px);
+        padding: 14px;
+        overflow: auto;
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        background: var(--card);
+        box-shadow: var(--shadow);
+      }
+      .search {
+        width: 100%;
+        padding: 8px 10px;
+        border: 1px solid var(--border);
+        border-radius: 9px;
+        outline: none;
+      }
+      .search:focus { border-color: #818cf8; box-shadow: 0 0 0 3px #6366f126; }
+      .nav-stage { margin: 14px 5px 5px; color: var(--accent); font-size: 11px; font-weight: 900; }
+      .nav-module {
+        display: flex;
+        padding: 7px 9px;
+        align-items: center;
+        gap: 8px;
+        border-radius: 8px;
+        color: var(--text);
+        font-size: 12px;
+        text-decoration: none;
+      }
+      .nav-module:hover { background: var(--primary-soft); }
+      .nav-module span:first-child { color: var(--primary); font-weight: 900; }
+      .nav-module span:nth-child(2) { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+      .nav-module span:last-child { color: var(--muted); font-size: 10px; font-weight: 800; }
+      .nav-module.done span:last-child { color: var(--ok); }
+      .sidebar-tip { margin: 12px 0 0; padding: 9px; border-radius: 9px; color: var(--muted); background: #f8fafc; font-size: 10px; }
+
+      .stage-heading { display: flex; margin: 24px 0 12px; align-items: baseline; flex-wrap: wrap; gap: 11px; }
+      .stage-heading:first-child { margin-top: 0; }
+      .stage-heading h2 { margin: 0; font-size: 18px; }
+      .stage-meta { color: var(--muted); font-size: 12px; }
+      .stage-progress { margin-left: auto; color: var(--primary); font-size: 12px; font-weight: 900; }
+      .module-card {
+        margin-bottom: 17px;
+        overflow: hidden;
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        background: var(--card);
+        box-shadow: var(--shadow);
+      }
+      .module-head { display: flex; padding: 16px 19px; align-items: center; gap: 12px; cursor: pointer; user-select: none; }
+      .module-number { flex: none; padding: 4px 9px; border-radius: 8px; color: #fff; background: linear-gradient(135deg, var(--primary), var(--accent)); font-size: 11px; font-weight: 900; }
+      .module-head h3 { flex: 1; min-width: 0; margin: 0; font-size: 16px; }
+      .module-info { color: var(--muted); font-size: 11px; }
+      .module-percent { width: 45px; color: var(--primary); text-align: right; font-size: 13px; font-weight: 900; }
+      .module-percent.done { color: var(--ok); }
+      .caret { color: var(--muted); transition: transform .2s; }
+      .module-card.open .caret { transform: rotate(90deg); }
+      .module-bar { height: 5px; background: #edf0f7; }
+      .module-bar i { display: block; width: 0; height: 100%; border-radius: 3px; background: linear-gradient(90deg, #3b82f6, #8b5cf6); transition: width .3s; }
+      .module-body { display: none; padding: 8px 20px 19px; border-top: 1px dashed var(--border); }
+      .module-card.open .module-body { display: block; }
+      .module-brief { margin: 8px 0 4px; color: var(--muted); font-size: 12px; }
+      .resource-links { display: flex; margin-top: 7px; flex-wrap: wrap; gap: 9px; }
+      .resource-links a { color: var(--primary); font-size: 11px; text-decoration: none; border-bottom: 1px dashed #2563eb66; }
+      .section { margin-top: 14px; }
+      .section h4 { margin: 0 0 6px; padding-left: 9px; border-left: 3px solid var(--primary); font-size: 13px; }
+      .point { display: flex; padding: 5px 4px 5px 0; align-items: flex-start; gap: 8px; border-radius: 6px; font-size: 13px; cursor: pointer; }
+      .point:hover { background: var(--primary-soft); }
+      .point input { flex: none; width: 15px; height: 15px; margin-top: 4px; accent-color: var(--primary); }
+      .point input:checked + span { color: var(--muted); text-decoration: line-through; }
+      .notes { margin-top: 15px; }
+      .notes label { color: var(--muted); font-size: 11px; font-weight: 800; }
+      .notes textarea { width: 100%; min-height: 60px; margin-top: 6px; padding: 9px 10px; resize: vertical; border: 1px solid var(--border); border-radius: 9px; outline: none; }
+      .notes textarea:focus { border-color: var(--primary); box-shadow: 0 0 0 3px #2563eb1f; }
+
+      .transfer { margin-top: 30px; padding: 20px; border-radius: var(--radius); color: #e2e8f0; background: linear-gradient(180deg, #0f172a, #1e293b); }
+      .transfer h2 { margin: 0; color: #fff; font-size: 17px; }
+      .transfer p { color: #94a3b8; font-size: 11px; }
+      .transfer textarea { width: 100%; min-height: 130px; padding: 10px; resize: vertical; border: 1px solid #334155; border-radius: 9px; color: #cbd5e1; background: #0b1220; font: 11px Consolas, monospace; }
+      .transfer-actions { display: flex; margin-top: 9px; flex-wrap: wrap; gap: 8px; }
+      .transfer .button { color: #e2e8f0; background: #334155; }
+      .empty { padding: 38px; color: var(--muted); text-align: center; }
+      .hidden { display: none !important; }
+      #toast { position: fixed; bottom: 25px; left: 50%; z-index: 50; padding: 10px 16px; border-radius: 10px; color: #fff; background: #111827; opacity: 0; pointer-events: none; transform: translate(-50%, 70px); transition: .25s; }
+      #toast.show { opacity: 1; transform: translate(-50%, 0); }
+
+      @media (max-width: 960px) {
+        .layout { grid-template-columns: 1fr; }
+        .sidebar { position: static; max-height: none; }
+      }
+      @media (max-width: 620px) {
+        .hero { padding: 24px 16px; }
+        .ring-wrap { width: 100%; justify-content: space-between; }
+        .layout { padding: 16px 12px 60px; }
+        .module-info { display: none; }
+        .module-head { padding: 14px; }
+        .module-body { padding: 8px 14px 16px; }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        *, *::before, *::after { scroll-behavior: auto !important; transition: none !important; }
+      }
+    </style>
+  </head>
+  <body>
+    <header class="hero">
+      <div class="hero-inner">
+        <div class="hero-copy">
+          <span class="template-badge">标准路线模板 · 请替换 X</span>
+          <h1 id="routeTitle">X专业通用就业学习路线</h1>
+          <p class="subtitle" id="routeSubtitle">X专业路线简介：说明学习对象、核心能力、实践方向和就业目标。</p>
+        </div>
+        <div class="ring-wrap">
+          <div class="ring">
+            <svg width="104" height="104" viewBox="0 0 104 104" aria-hidden="true">
+              <circle cx="52" cy="52" r="46" fill="none" stroke="#ffffff40" stroke-width="9" />
+              <circle id="ringProgress" cx="52" cy="52" r="46" fill="none" stroke="#fff" stroke-width="9" stroke-linecap="round" />
+            </svg>
+            <div class="ring-value"><b id="overallPercent">0%</b><span>总进度</span></div>
+          </div>
+          <div class="hero-stats">
+            <div class="hero-stat"><b id="pointStats">0/0</b>已学知识点</div>
+            <div class="hero-stat"><b id="moduleStats">0/0</b>完成模块</div>
+            <div class="hero-stat"><b id="periodStats">X个月</b>建议周期</div>
+          </div>
+        </div>
+        <div class="hero-actions">
+          <!-- [必须替换] category=X 改为实际专业类别 slug。 -->
+          <a class="button primary" id="backLink" href="learnMajorCategory.html?category=X">← 返回专业导向</a>
+          <button class="button" id="expandAll" type="button">展开全部</button>
+          <button class="button" id="collapseAll" type="button">收起全部</button>
+          <button class="button danger" id="resetProgress" type="button">清空本路线进度</button>
+        </div>
+      </div>
+    </header>
+
+    <main class="layout">
+      <aside class="sidebar">
+        <input class="search" id="searchInput" type="search" placeholder="搜索模块或知识点" />
+        <nav id="navigation" aria-label="路线阶段导航"></nav>
+        <p class="sidebar-tip">进度默认保存在本机浏览器。复制模板时必须修改 routeKey，避免不同路线共用进度。</p>
+      </aside>
+
+      <div>
+        <section id="moduleContainer" aria-live="polite"></section>
+        <section class="transfer">
+          <h2>路线进度交接</h2>
+          <p>可以导出当前路线的勾选、备注和版本信息，也可以粘贴同一路线的进度 JSON 恢复。</p>
+          <textarea id="progressJson" placeholder="点击导出进度，或在这里粘贴同一路线的 JSON。"></textarea>
+          <div class="transfer-actions">
+            <button class="button" id="exportProgress" type="button">导出进度</button>
+            <button class="button" id="copyProgress" type="button">复制 JSON</button>
+            <button class="button" id="importProgress" type="button">导入进度</button>
+          </div>
+        </section>
+      </div>
+    </main>
+    <div id="toast" role="status" aria-live="polite"></div>
+
+    <script>
+      /* [ANCHOR:ROADMAP]
+       * ========================= 专业内容唯一编辑区 =========================
+       * [必须替换] routeKey 必须使用稳定、唯一的英文标识，例如 mechanical-employment。
+       * [必须替换] categorySlug 必须与专业类别接口中的 slug 一致。
+       * [必须替换] 页面标题、简介、周期，以及下面所有 X 内容。
+       * stages：路线阶段；modules：学习模块；sections：知识板块；points：可勾选知识点。
+       */
+      const ROADMAP = {
+        schemaVersion: 1,
+        version: "0.1.0",
+        updated: "XXXX-XX-XX",
+        routeKey: "X",
+        categorySlug: "X",
+        title: "X专业通用就业学习路线",
+        subtitle: "X专业路线简介：说明学习对象、核心能力、实践方向和就业目标。",
+        suggestedPeriod: "X个月",
+        stages: [
+          {
+            id: "s01",
+            name: "阶段一 · X基础能力",
+            period: "第X—X周",
+            goal: "掌握X专业共同基础",
+          },
+          {
+            id: "s02",
+            name: "阶段二 · X核心能力",
+            period: "第X—X周",
+            goal: "形成X专业核心实践能力",
+          },
+          {
+            id: "s03",
+            name: "阶段三 · X项目与就业",
+            period: "第X—X周",
+            goal: "完成X项目并面向目标岗位准备",
+          },
+        ],
+        modules: [
+          {
+            id: "m01",
+            stage: "s01",
+            no: "M01",
+            title: "X基础模块",
+            weeks: "X周",
+            weight: 3,
+            brief: "说明本模块解决的问题、完成标准以及与后续模块的关系。",
+            resources: [
+              { label: "X配套资源", href: "resourceDemo.html?title=X配套资源&return=learnXXX.html" },
+            ],
+            sections: [
+              {
+                title: "X基础知识板块",
+                points: ["X知识点一", "X知识点二", "X基础练习"],
+              },
+            ],
+          },
+          {
+            id: "m02",
+            stage: "s02",
+            no: "M02",
+            title: "X核心模块",
+            weeks: "X周",
+            weight: 5,
+            brief: "列出本专业最核心、最具区分度的能力，不要重复公共基础。",
+            resources: [],
+            sections: [
+              {
+                title: "X核心理论",
+                points: ["X核心知识一", "X核心知识二"],
+              },
+              {
+                title: "X核心实践",
+                points: ["X实验或训练", "X阶段作品"],
+              },
+            ],
+          },
+          {
+            id: "m03",
+            stage: "s03",
+            no: "M03",
+            title: "X项目与就业模块",
+            weeks: "X周",
+            weight: 4,
+            brief: "用综合项目连接课程知识、作品集、实习和目标岗位。",
+            resources: [],
+            sections: [
+              {
+                title: "X综合项目",
+                points: ["确定项目目标与验收标准", "完成项目实现", "整理文档与作品展示"],
+              },
+              {
+                title: "X就业准备",
+                points: ["梳理目标岗位", "整理专业问题", "完成简历与面试演练"],
+              },
+            ],
+          },
+        ],
+      };
+      /* ======================= 专业内容编辑区结束 ======================= */
+
+      const STORAGE_KEY = "profilesSystem:roadmap:" + ROADMAP.routeKey;
+      const CIRCUMFERENCE = 2 * Math.PI * 46;
+      let state = loadState();
+
+      function emptyState() {
+        return { checks: {}, notes: {}, updatedAt: null };
+      }
+
+      function loadState() {
+        try {
+          const value = JSON.parse(localStorage.getItem(STORAGE_KEY));
+          return value && typeof value === "object" ? value : emptyState();
+        } catch (_) {
+          return emptyState();
+        }
+      }
+
+      function saveState() {
+        state.updatedAt = new Date().toISOString();
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+      }
+
+      function escapeHtml(value) {
+        return String(value == null ? "" : value)
+          .replaceAll("&", "&amp;")
+          .replaceAll("<", "&lt;")
+          .replaceAll(">", "&gt;")
+          .replaceAll('"', "&quot;")
+          .replaceAll("'", "&#39;");
+      }
+
+      function safeHref(value) {
+        if (/^https:\/\//i.test(value || "")) return value;
+        if (/^[a-zA-Z0-9_-]+\.html(?:\?[^\s]*)?$/.test(value || "")) return value;
+        return "#";
+      }
+
+      function pointKey(moduleId, sectionIndex, pointIndex) {
+        return moduleId + ":" + sectionIndex + ":" + pointIndex;
+      }
+
+      function moduleStats(module) {
+        let total = 0;
+        let checked = 0;
+        module.sections.forEach(function (section, sectionIndex) {
+          section.points.forEach(function (_, pointIndex) {
+            total++;
+            if (state.checks[pointKey(module.id, sectionIndex, pointIndex)]) checked++;
+          });
+        });
+        return { total, checked, percent: total ? Math.round(checked / total * 100) : 0 };
+      }
+
+      function overallStats() {
+        let total = 0;
+        let checked = 0;
+        let completedModules = 0;
+        ROADMAP.modules.forEach(function (module) {
+          const stats = moduleStats(module);
+          total += stats.total;
+          checked += stats.checked;
+          if (stats.total && stats.checked === stats.total) completedModules++;
+        });
+        return { total, checked, completedModules, percent: total ? Math.round(checked / total * 100) : 0 };
+      }
+
+      function stageStats(stageId) {
+        let total = 0;
+        let checked = 0;
+        ROADMAP.modules.filter(function (module) { return module.stage === stageId; }).forEach(function (module) {
+          const stats = moduleStats(module);
+          total += stats.total;
+          checked += stats.checked;
+        });
+        return { total, checked, percent: total ? Math.round(checked / total * 100) : 0 };
+      }
+
+      function resourceHtml(resources) {
+        if (!Array.isArray(resources) || !resources.length) return "";
+        return '<div class="resource-links">' + resources.map(function (resource) {
+          return '<a href="' + escapeHtml(safeHref(resource.href)) + '">' + escapeHtml(resource.label) + " →</a>";
+        }).join("") + "</div>";
+      }
+
+      function renderNavigation() {
+        const navigation = document.getElementById("navigation");
+        navigation.innerHTML = ROADMAP.stages.map(function (stage) {
+          const modules = ROADMAP.modules.filter(function (module) { return module.stage === stage.id; });
+          return '<div class="nav-stage">' + escapeHtml(stage.name) + "</div>" + modules.map(function (module) {
+            const stats = moduleStats(module);
+            return '<a class="nav-module ' + (stats.percent === 100 ? "done" : "") + '" href="#module-' +
+              escapeHtml(module.id) + '"><span>' + escapeHtml(module.no) + "</span><span>" +
+              escapeHtml(module.title) + "</span><span>" + stats.percent + "%</span></a>";
+          }).join("");
+        }).join("");
+      }
+
+      function renderModules() {
+        const container = document.getElementById("moduleContainer");
+        if (!ROADMAP.stages.length || !ROADMAP.modules.length) {
+          container.innerHTML = '<div class="empty">路线数据尚未填写，请编辑 ROADMAP。</div>';
+          return;
+        }
+        container.innerHTML = ROADMAP.stages.map(function (stage) {
+          const modules = ROADMAP.modules.filter(function (module) { return module.stage === stage.id; });
+          const stageProgress = stageStats(stage.id);
+          return '<div class="stage-heading" id="stage-' + escapeHtml(stage.id) + '"><h2>' + escapeHtml(stage.name) +
+            '</h2><span class="stage-meta">' + escapeHtml(stage.period) + " · " + escapeHtml(stage.goal) +
+            '</span><span class="stage-progress">阶段进度 ' + stageProgress.percent + "%（" + stageProgress.checked +
+            "/" + stageProgress.total + "）</span></div>" + modules.map(renderModule).join("");
+        }).join("");
+      }
+
+      function renderModule(module) {
+        const stats = moduleStats(module);
+        const sections = module.sections.map(function (section, sectionIndex) {
+          const points = section.points.map(function (point, pointIndex) {
+            const key = pointKey(module.id, sectionIndex, pointIndex);
+            return '<label class="point"><input type="checkbox" data-key="' + escapeHtml(key) + '" ' +
+              (state.checks[key] ? "checked" : "") + ' /><span>' + escapeHtml(point) + "</span></label>";
+          }).join("");
+          return '<div class="section"><h4>' + escapeHtml(section.title) + "</h4>" + points + "</div>";
+        }).join("");
+        return '<article class="module-card open" id="module-' + escapeHtml(module.id) + '" data-module="' +
+          escapeHtml(module.id) + '"><div class="module-head"><span class="module-number">' + escapeHtml(module.no) +
+          "</span><h3>" + escapeHtml(module.title) + '</h3><span class="module-info">' + escapeHtml(module.weeks) +
+          " · 权重 " + Number(module.weight || 0) + '/5</span><span class="module-percent ' +
+          (stats.percent === 100 ? "done" : "") + '">' + stats.percent +
+          '%</span><span class="caret">▶</span></div><div class="module-bar"><i style="width:' + stats.percent +
+          '%"></i></div><div class="module-body"><p class="module-brief">' + escapeHtml(module.brief) + "</p>" +
+          resourceHtml(module.resources) + sections + '<div class="notes"><label>本模块备注 / 卡点</label><textarea data-note="' +
+          escapeHtml(module.id) + '" placeholder="记录当前进度、问题和下一步。">' +
+          escapeHtml(state.notes[module.id] || "") + "</textarea></div></div></article>";
+      }
+
+      function refresh() {
+        renderNavigation();
+        renderModules();
+        const stats = overallStats();
+        document.getElementById("overallPercent").textContent = stats.percent + "%";
+        document.getElementById("pointStats").textContent = stats.checked + "/" + stats.total;
+        document.getElementById("moduleStats").textContent = stats.completedModules + "/" + ROADMAP.modules.length;
+        const ring = document.getElementById("ringProgress");
+        ring.setAttribute("stroke-dasharray", String(CIRCUMFERENCE));
+        ring.setAttribute("stroke-dashoffset", String(CIRCUMFERENCE * (1 - stats.percent / 100)));
+      }
+
+      function applyPageMetadata() {
+        document.title = ROADMAP.title + " · ProfilesSystem";
+        document.getElementById("routeTitle").textContent = ROADMAP.title;
+        document.getElementById("routeSubtitle").textContent = ROADMAP.subtitle;
+        document.getElementById("periodStats").textContent = ROADMAP.suggestedPeriod;
+        document.getElementById("backLink").href = "learnMajorCategory.html?category=" + encodeURIComponent(ROADMAP.categorySlug);
+      }
+
+      function showToast(message) {
+        const toast = document.getElementById("toast");
+        toast.textContent = message;
+        toast.classList.add("show");
+        clearTimeout(toast.timer);
+        toast.timer = setTimeout(function () { toast.classList.remove("show"); }, 2200);
+      }
+
+      document.getElementById("moduleContainer").addEventListener("click", function (event) {
+        const head = event.target.closest(".module-head");
+        if (head) head.closest(".module-card").classList.toggle("open");
+      });
+      document.getElementById("moduleContainer").addEventListener("change", function (event) {
+        const checkbox = event.target.closest("input[data-key]");
+        if (checkbox) {
+          state.checks[checkbox.dataset.key] = checkbox.checked;
+          saveState();
+          refresh();
+          return;
+        }
+        const note = event.target.closest("textarea[data-note]");
+        if (note) {
+          state.notes[note.dataset.note] = note.value;
+          saveState();
+        }
+      });
+      document.getElementById("moduleContainer").addEventListener("input", function (event) {
+        const note = event.target.closest("textarea[data-note]");
+        if (!note) return;
+        state.notes[note.dataset.note] = note.value;
+        saveState();
+      });
+      document.getElementById("searchInput").addEventListener("input", function (event) {
+        const query = event.target.value.trim().toLowerCase();
+        ROADMAP.modules.forEach(function (module) {
+          const text = [module.no, module.title, module.brief]
+            .concat(module.sections.flatMap(function (section) { return [section.title].concat(section.points); }))
+            .join(" ").toLowerCase();
+          document.getElementById("module-" + module.id).classList.toggle("hidden", Boolean(query) && !text.includes(query));
+        });
+        ROADMAP.stages.forEach(function (stage) {
+          const visible = ROADMAP.modules.some(function (module) {
+            return module.stage === stage.id && !document.getElementById("module-" + module.id).classList.contains("hidden");
+          });
+          document.getElementById("stage-" + stage.id).classList.toggle("hidden", !visible);
+        });
+      });
+      document.getElementById("expandAll").addEventListener("click", function () {
+        document.querySelectorAll(".module-card").forEach(function (card) { card.classList.add("open"); });
+      });
+      document.getElementById("collapseAll").addEventListener("click", function () {
+        document.querySelectorAll(".module-card").forEach(function (card) { card.classList.remove("open"); });
+      });
+      document.getElementById("resetProgress").addEventListener("click", function () {
+        if (!confirm("确定清空这条路线的全部勾选和备注吗？")) return;
+        state = emptyState();
+        localStorage.removeItem(STORAGE_KEY);
+        refresh();
+        showToast("本路线进度已清空");
+      });
+      document.getElementById("exportProgress").addEventListener("click", function () {
+        document.getElementById("progressJson").value = JSON.stringify({
+          app: "profiles-roadmap-progress",
+          schemaVersion: 1,
+          routeKey: ROADMAP.routeKey,
+          routeVersion: ROADMAP.version,
+          exportedAt: new Date().toISOString(),
+          state,
+        }, null, 2);
+        showToast("进度 JSON 已生成");
+      });
+      document.getElementById("copyProgress").addEventListener("click", async function () {
+        const area = document.getElementById("progressJson");
+        const value = area.value;
+        if (!value) return showToast("请先导出进度");
+        try {
+          if (navigator.clipboard && navigator.clipboard.writeText) {
+            await navigator.clipboard.writeText(value);
+          } else {
+            area.select();
+            document.execCommand("copy");
+          }
+          showToast("进度 JSON 已复制");
+        } catch (_) {
+          showToast("自动复制失败，请手动复制文本框内容");
+        }
+      });
+      document.getElementById("importProgress").addEventListener("click", function () {
+        try {
+          const payload = JSON.parse(document.getElementById("progressJson").value);
+          if (payload.app !== "profiles-roadmap-progress" || payload.routeKey !== ROADMAP.routeKey || !payload.state) {
+            throw new Error("内容不属于当前学习路线");
+          }
+          state = {
+            checks: payload.state.checks && typeof payload.state.checks === "object" ? payload.state.checks : {},
+            notes: payload.state.notes && typeof payload.state.notes === "object" ? payload.state.notes : {},
+            updatedAt: payload.state.updatedAt || null,
+          };
+          saveState();
+          refresh();
+          showToast("进度导入成功");
+        } catch (error) {
+          showToast("导入失败：" + error.message);
+        }
+      });
+
+      applyPageMetadata();
+      refresh();
+    </script>
+  </body>
+</html>

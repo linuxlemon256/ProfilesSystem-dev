@@ -63,6 +63,8 @@
       .release:nth-child(9) { animation-delay: .68s; }
       .release:nth-child(10) { animation-delay: .76s; }
       .release:nth-child(11) { animation-delay: .84s; }
+      .release:nth-child(12) { animation-delay: .92s; }
+      .release:nth-child(13) { animation-delay: 1s; }
       @keyframes rise { from { opacity: 0; transform: translateY(22px); } to { opacity: 1; transform: translateY(0); } }
       @media (max-width: 620px) {
         .page { width: min(100% - 24px, 520px); padding-top: 18px; }
@@ -100,6 +102,28 @@
       </section>
 
       <section class="timeline" aria-label="版本记录">
+        <article class="release">
+          <div class="release-head">
+            <div><h2>v0.4.0</h2><p class="release-note">学习内容分层控制 · 从整个专业类别到单项资源均可独立开放。</p></div>
+            <time datetime="2026-10-31">2026 · 10 · 31</time>
+          </div>
+          <div class="changes">
+            <div class="change"><span class="tag new">新增</span><p>管理面板加入专业类别、具体专业、学习路线和学习资源的折叠层级、搜索与独立开关。</p></div>
+            <div class="change"><span class="tag improve">优化</span><p>类别关闭会阻止全部下级访问但保留下级设置；路线和资源的开放状态与发布状态相互独立。</p></div>
+            <div class="change"><span class="tag fix">修复</span><p>用户查询现在同步检查上级专业、关联路线及具体内容的开放状态，避免从直接链接绕过关闭设置。</p></div>
+          </div>
+        </article>
+        <article class="release">
+          <div class="release-head">
+            <div><h2>v0.3.0</h2><p class="release-note">路线标准模板 · 其他专业可以沿同一规范继续建设。</p></div>
+            <time datetime="2026-10-31">2026 · 10 · 31</time>
+          </div>
+          <div class="changes">
+            <div class="change"><span class="tag new">新增</span><p>新增 learnXXX.html，以 X 作为待填写占位，并集中提供可复制的 ROADMAP 专业内容结构。</p></div>
+            <div class="change"><span class="tag new">新增</span><p>模板内置阶段导航、模块卡片、知识点进度、备注、搜索、展开收起及进度 JSON 导入导出。</p></div>
+            <div class="change"><span class="tag improve">优化</span><p>通过独立 routeKey 隔离各路线的浏览器进度，并加入稳定 ID 和内容分层编写约定。</p></div>
+          </div>
+        </article>
         <article class="release">
           <div class="release-head">
             <div><h2>v0.2.3</h2><p class="release-note">学习导向切换 · 路线和专业现在一键直达。</p></div>

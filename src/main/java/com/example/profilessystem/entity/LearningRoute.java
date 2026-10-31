@@ -10,6 +10,7 @@ public class LearningRoute {
     private String targetUrl;
     private int requiredLevel;
     private String status;
+    private boolean enabled = true;
     private int sortOrder;
 
     public Long getId() { return id; }
@@ -30,6 +31,8 @@ public class LearningRoute {
     public void setRequiredLevel(int requiredLevel) { this.requiredLevel = requiredLevel; }
     public String getStatus() { return status; }
     public void setStatus(String status) { this.status = status; }
+    public boolean getEnabled() { return enabled; }
+    public void setEnabled(boolean enabled) { this.enabled = enabled; }
     public int getSortOrder() { return sortOrder; }
     public void setSortOrder(int sortOrder) { this.sortOrder = sortOrder; }
 }

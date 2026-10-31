@@ -46,24 +46,24 @@ public class LearningContentTransferService {
 
         List<LearningContentTransfer.RouteItem> routes = jdbc.query(
                 "SELECT c.slug category_slug,m.code major_code,r.title,r.description,r.icon,r.target_url," +
-                        "r.required_level,r.status,r.sort_order FROM learning_route r " +
+                        "r.required_level,r.status,r.enabled,r.sort_order FROM learning_route r " +
                         "JOIN major_category c ON c.id=r.category_id LEFT JOIN major m ON m.id=r.major_id " +
                         "ORDER BY c.sort_order,r.sort_order,r.id",
                 (rs, row) -> new LearningContentTransfer.RouteItem(
                         rs.getString("category_slug"), rs.getString("major_code"), rs.getString("title"),
                         rs.getString("description"), rs.getString("icon"), rs.getString("target_url"),
-                        rs.getInt("required_level"), rs.getString("status"), rs.getInt("sort_order")));
+                        rs.getInt("required_level"), rs.getString("status"), rs.getInt("enabled") == 1, rs.getInt("sort_order")));
 
         List<LearningContentTransfer.ResourceItem> resources = jdbc.query(
                 "SELECT c.slug category_slug,m.code major_code,r.title route_title,x.title,x.description,x.icon," +
-                        "x.resource_type,x.required_level,x.status,x.target_url,x.original_name,x.storage_key,x.sort_order " +
+                        "x.resource_type,x.required_level,x.status,x.enabled,x.target_url,x.original_name,x.storage_key,x.sort_order " +
                         "FROM learning_resource x JOIN major_category c ON c.id=x.category_id " +
                         "LEFT JOIN major m ON m.id=x.major_id LEFT JOIN learning_route r ON r.id=x.route_id " +
                         "ORDER BY c.sort_order,x.sort_order,x.id",
                 (rs, row) -> new LearningContentTransfer.ResourceItem(
                         rs.getString("category_slug"), rs.getString("major_code"), rs.getString("route_title"),
                         rs.getString("title"), rs.getString("description"), rs.getString("icon"),
-                        rs.getString("resource_type"), rs.getInt("required_level"), rs.getString("status"),
+                        rs.getString("resource_type"), rs.getInt("required_level"), rs.getString("status"), rs.getInt("enabled") == 1,
                         rs.getString("target_url"), rs.getString("original_name"), rs.getString("storage_key"),
                         rs.getInt("sort_order")));
 
@@ -114,12 +114,12 @@ public class LearningContentTransferService {
         required(item.title(), "学习路线标题");
         long categoryId = categoryId(item.categorySlug());
         Long majorId = optionalMajorId(item.majorCode());
-        jdbc.update("INSERT INTO learning_route(category_id,major_id,title,description,icon,target_url,required_level,status,sort_order) " +
-                        "VALUES(?,?,?,?,?,?,?,?,?) ON DUPLICATE KEY UPDATE major_id=VALUES(major_id),description=VALUES(description)," +
-                        "icon=VALUES(icon),target_url=VALUES(target_url),required_level=VALUES(required_level),status=VALUES(status),sort_order=VALUES(sort_order)",
+        jdbc.update("INSERT INTO learning_route(category_id,major_id,title,description,icon,target_url,required_level,status,enabled,sort_order) " +
+                        "VALUES(?,?,?,?,?,?,?,?,?,?) ON DUPLICATE KEY UPDATE major_id=VALUES(major_id),description=VALUES(description)," +
+                        "icon=VALUES(icon),target_url=VALUES(target_url),required_level=VALUES(required_level),status=VALUES(status),enabled=VALUES(enabled),sort_order=VALUES(sort_order)",
                 categoryId, majorId, item.title().trim(), text(item.description()), defaultText(item.icon(), "⌘"),
                 nullable(item.targetUrl()), level(item.requiredLevel()), defaultText(item.status(), "DRAFT").toUpperCase(),
-                number(item.sortOrder(), 0));
+                bool(item.enabled(), true), number(item.sortOrder(), 0));
     }
 
     private void upsertResource(LearningContentTransfer.ResourceItem item) {
@@ -129,13 +129,13 @@ public class LearningContentTransferService {
         Long majorId = optionalMajorId(item.majorCode());
         Long routeId = optionalRouteId(categoryId, item.routeTitle());
         jdbc.update("INSERT INTO learning_resource(category_id,major_id,route_id,title,description,icon,resource_type," +
-                        "required_level,status,target_url,original_name,storage_key,sort_order) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?) " +
+                        "required_level,status,enabled,target_url,original_name,storage_key,sort_order) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?) " +
                         "ON DUPLICATE KEY UPDATE major_id=VALUES(major_id),route_id=VALUES(route_id),description=VALUES(description)," +
                         "icon=VALUES(icon),resource_type=VALUES(resource_type),required_level=VALUES(required_level),status=VALUES(status)," +
-                        "target_url=VALUES(target_url),original_name=VALUES(original_name),storage_key=VALUES(storage_key),sort_order=VALUES(sort_order)",
+                        "enabled=VALUES(enabled),target_url=VALUES(target_url),original_name=VALUES(original_name),storage_key=VALUES(storage_key),sort_order=VALUES(sort_order)",
                 categoryId, majorId, routeId, item.title().trim(), text(item.description()), defaultText(item.icon(), "✦"),
                 defaultText(item.resourceType(), "LINK").toUpperCase(), level(item.requiredLevel()),
-                defaultText(item.status(), "DRAFT").toUpperCase(), nullable(item.targetUrl()), nullable(item.originalName()),
+                defaultText(item.status(), "DRAFT").toUpperCase(), bool(item.enabled(), true), nullable(item.targetUrl()), nullable(item.originalName()),
                 nullable(item.storageKey()), number(item.sortOrder(), 0));
     }
 

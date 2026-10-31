@@ -45,6 +45,7 @@ public record LearningContentTransfer(
             String targetUrl,
             Integer requiredLevel,
             String status,
+            Boolean enabled,
             Integer sortOrder
     ) {}
 
@@ -58,6 +59,7 @@ public record LearningContentTransfer(
             String resourceType,
             Integer requiredLevel,
             String status,
+            Boolean enabled,
             String targetUrl,
             String originalName,
             String storageKey,
