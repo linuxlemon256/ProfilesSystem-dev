@@ -437,6 +437,24 @@
       .switch input:checked + .slider:before { transform:translateX(20px); }
       @media(max-width:800px){.feature-switches{grid-template-columns:repeat(2,minmax(0,1fr))}}
       @media(max-width:520px){.feature-switches{grid-template-columns:1fr}}
+      .transfer-body { padding: 20px; }
+      .transfer-notice { margin: 0 0 16px; padding: 13px 15px; border: 1px solid #c7d2fe; border-radius: 13px; color: #475569; background: linear-gradient(135deg, #eef2ff, #f5f3ff); font-size: 12px; line-height: 1.75; }
+      .transfer-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; }
+      .transfer-item { position: relative; overflow: hidden; padding: 17px; border: 1px solid #dbe4ff; border-radius: 15px; background: #fff; }
+      .transfer-item::after { content: ""; position: absolute; width: 64px; height: 64px; right: -24px; top: -25px; border-radius: 50%; background: linear-gradient(135deg, #c7d2fe, #ddd6fe); opacity: .65; }
+      .transfer-item span { color: #64748b; font-size: 12px; font-weight: 800; }
+      .transfer-item strong { display: block; margin-top: 9px; color: #312e81; font-size: 25px; }
+      .transfer-item small { display: block; margin-top: 5px; color: #94a3b8; font-size: 10px; }
+      .transfer-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin-top: 17px; }
+      .transfer-button { display: inline-flex; min-height: 42px; padding: 0 16px; align-items: center; justify-content: center; gap: 7px; border: 0; border-radius: 11px; color: #fff; background: linear-gradient(135deg, #4f46e5, #8b5cf6); box-shadow: 0 9px 20px #6366f13b; font: inherit; font-size: 12px; font-weight: 900; line-height: 1; cursor: pointer; }
+      .transfer-button.secondary { color: #4338ca; background: #e0e7ff; box-shadow: none; }
+      .transfer-button.secondary:hover { color: #312e81; background: #c7d2fe; box-shadow: 0 8px 18px #6366f126; }
+      .transfer-button.import { background: linear-gradient(135deg, #0891b2, #10b981); box-shadow: 0 9px 20px #0d94883b; }
+      .transfer-button:disabled { opacity: .45; cursor: not-allowed; transform: none !important; }
+      .transfer-file { position: absolute; width: 1px; height: 1px; opacity: 0; pointer-events: none; }
+      .transfer-preview { flex: 1 1 280px; min-height: 42px; padding: 11px 13px; border: 1px dashed #cbd5e1; border-radius: 11px; color: #64748b; background: #f8fafc; font-size: 11px; line-height: 1.55; }
+      @media(max-width:900px){.transfer-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+      @media(max-width:520px){.transfer-grid{grid-template-columns:1fr}.transfer-actions{align-items:stretch}.transfer-button{width:100%}.transfer-preview{flex-basis:100%}}
     </style>
     <style id="profiles-motion">
     @keyframes profilesPageIn { from { opacity: 0; } to { opacity: 1; } }
@@ -566,6 +584,25 @@
         <div class="toolbar"><strong>功能开放设置</strong><span class="count">关闭后端接口会同步拒绝访问</span></div>
         <div id="featureSwitches" class="feature-switches"><div class="empty">正在读取功能状态…</div></div>
       </section>
+      <section class="panel" style="margin-top:22px">
+        <div class="toolbar"><strong>数据内容迁移</strong><span class="count" id="contentTransferState">正在读取内容概览…</span></div>
+        <div class="transfer-body">
+          <p class="transfer-notice">这里只迁移专业学习相关内容。导入采用“按内容标识合并”的方式，不会创建、删除或重命名任何数据结构，也不会接收 SQL 文件。</p>
+          <div class="transfer-grid">
+            <div class="transfer-item"><span>专业类别</span><strong id="transferCategoryCount">—</strong><small>学习空间中的专业分类</small></div>
+            <div class="transfer-item"><span>具体专业</span><strong id="transferMajorCount">—</strong><small>专业代码与目录信息</small></div>
+            <div class="transfer-item"><span>学习路线</span><strong id="transferRouteCount">—</strong><small>各专业的学习导向</small></div>
+            <div class="transfer-item"><span>学习资源</span><strong id="transferResourceCount">—</strong><small>资源说明、等级与访问地址</small></div>
+          </div>
+          <div class="transfer-actions">
+            <button class="transfer-button" id="contentExport" type="button">导出学习内容</button>
+            <button class="transfer-button secondary" id="contentChoose" type="button"><span aria-hidden="true">⌁</span>选择内容包</button>
+            <input class="transfer-file" id="contentImportFile" type="file" accept="application/json,.json" />
+            <button class="transfer-button import" id="contentImport" type="button" disabled>确认导入并合并</button>
+            <div class="transfer-preview" id="contentImportPreview">尚未选择内容包。仅接受由本系统导出的 JSON 文件。</div>
+          </div>
+        </div>
+      </section>
     </main>
     <div class="toast" id="toast"></div>
     <div class="edit-modal" id="editModal" aria-hidden="true">
@@ -654,6 +691,97 @@
           root.querySelectorAll("input[data-reason]").forEach(input => input.addEventListener("change", async () => { const toggle = root.querySelector(`[data-feature="${input.dataset.reason}"]`); try { await request(`/api/features/${input.dataset.reason}`, {method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({enabled:toggle.checked,reason:input.value})}); showToast("关闭原因已保存"); } catch(error) { showToast("保存关闭原因失败：" + error.message); } }));
         } catch (error) { document.getElementById("featureSwitches").innerHTML = `<div class="empty">读取功能开关失败：${escapeHtml(error.message)}</div>`; }
       }
+      const contentImportFile = document.getElementById("contentImportFile");
+      const contentImportButton = document.getElementById("contentImport");
+      const contentImportPreview = document.getElementById("contentImportPreview");
+      let pendingContentImport = null;
+      document.getElementById("contentChoose").addEventListener("click", () => contentImportFile.click());
+
+      function contentSize(data) {
+        return {
+          categories: Array.isArray(data.professionalCategories) ? data.professionalCategories.length : 0,
+          majors: Array.isArray(data.specificMajors) ? data.specificMajors.length : 0,
+          routes: Array.isArray(data.learningRoutes) ? data.learningRoutes.length : 0,
+          resources: Array.isArray(data.learningResources) ? data.learningResources.length : 0,
+        };
+      }
+
+      async function loadContentTransferOverview() {
+        try {
+          const data = await request("/api/manager/content-transfer/overview");
+          document.getElementById("transferCategoryCount").textContent = data.professionalCategories ?? 0;
+          document.getElementById("transferMajorCount").textContent = data.specificMajors ?? 0;
+          document.getElementById("transferRouteCount").textContent = data.learningRoutes ?? 0;
+          document.getElementById("transferResourceCount").textContent = data.learningResources ?? 0;
+          document.getElementById("contentTransferState").textContent = "仅迁移内容，不操作数据结构";
+        } catch (error) {
+          document.getElementById("contentTransferState").textContent = "内容概览读取失败";
+          showToast("读取内容概览失败：" + error.message);
+        }
+      }
+
+      document.getElementById("contentExport").addEventListener("click", async () => {
+        try {
+          const data = await request("/api/manager/content-transfer/export");
+          const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json;charset=utf-8" });
+          const link = document.createElement("a");
+          const date = new Date().toISOString().slice(0, 10);
+          link.href = URL.createObjectURL(blob);
+          link.download = `ProfilesSystem-学习内容-${date}.json`;
+          document.body.appendChild(link);
+          link.click();
+          link.remove();
+          URL.revokeObjectURL(link.href);
+          showToast("学习内容已导出");
+        } catch (error) { showToast("导出失败：" + error.message); }
+      });
+
+      contentImportFile.addEventListener("change", async () => {
+        pendingContentImport = null;
+        contentImportButton.disabled = true;
+        const file = contentImportFile.files[0];
+        if (!file) {
+          contentImportPreview.textContent = "尚未选择内容包。仅接受由本系统导出的 JSON 文件。";
+          return;
+        }
+        if (file.size > 5 * 1024 * 1024) {
+          contentImportPreview.textContent = "文件超过 5 MB，已拒绝读取。";
+          return;
+        }
+        try {
+          const data = JSON.parse(await file.text());
+          if (data.format !== "profiles-learning-content" || data.formatVersion !== 1) {
+            throw new Error("不是受支持的 ProfilesSystem 学习内容包");
+          }
+          const size = contentSize(data);
+          pendingContentImport = data;
+          contentImportButton.disabled = false;
+          contentImportPreview.textContent = `${file.name} · ${size.categories} 个专业类别、${size.majors} 个具体专业、${size.routes} 条学习路线、${size.resources} 项学习资源`;
+        } catch (error) {
+          contentImportPreview.textContent = "读取失败：" + error.message;
+        }
+      });
+
+      contentImportButton.addEventListener("click", async () => {
+        if (!pendingContentImport) return;
+        if (!confirm("确认导入这个学习内容包吗？同名内容会更新，其他现有内容会保留。")) return;
+        contentImportButton.disabled = true;
+        try {
+          const result = await request("/api/manager/content-transfer/import", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(pendingContentImport),
+          });
+          contentImportPreview.textContent = `导入完成：${result.professionalCategories} 个专业类别、${result.specificMajors} 个具体专业、${result.learningRoutes} 条学习路线、${result.learningResources} 项学习资源`;
+          pendingContentImport = null;
+          contentImportFile.value = "";
+          showToast("学习内容已合并");
+          await loadContentTransferOverview();
+        } catch (error) {
+          contentImportButton.disabled = false;
+          showToast("导入失败：" + error.message);
+        }
+      });
       const editModal = document.getElementById("editModal");
       const editForm = document.getElementById("editForm");
       let editingUsername = "";
@@ -985,6 +1113,7 @@
       loadGroupRequests();
       loadLlmSettings();
       loadFeatureSwitches();
+      loadContentTransferOverview();
 
     </script>
   </body>

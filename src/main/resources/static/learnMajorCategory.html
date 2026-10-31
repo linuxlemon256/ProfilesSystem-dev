@@ -100,55 +100,8 @@
       <p class="foot" id="footText">ProfilesSystem · 专业学习空间</p>
     </main>
     <script>
-      const categories = {
-        electronics: { name: "电子信息类", field: "工学 · 电子信息类", summary: "从电子器件、通信与集成电路到人工智能和智能视听，连接信息的获取、传输、处理与应用。", majors: [
-          ["080701", "电子信息工程"], ["080702", "电子科学与技术"], ["080703", "通信工程"], ["080704", "微电子科学与工程"], ["080705", "光电信息科学与工程"], ["080706", "信息工程"], ["080707T", "广播电视工程"], ["080708T", "水声工程"], ["080709T", "电子封装技术"], ["080710T", "集成电路设计与集成系统"], ["080711T", "医学信息工程"], ["080712T", "电磁场与无线技术"], ["080713T", "电波传播与天线"], ["080714T", "电子信息科学与技术"], ["080715T", "电信工程及管理"], ["080716T", "应用电子技术教育"], ["080717T", "人工智能"], ["080718T", "海洋信息工程"], ["080719T", "柔性电子学"], ["080720T", "智能测控工程"], ["080721T", "智能视觉工程"], ["080722T", "智能视听工程"], ["080723TK", "半导体工艺与装备"]
-        ] },
-        electrical: { name: "电气类", field: "工学 · 电气类", summary: "围绕电能的产生、转换、输送、控制和智能利用，连接电力系统与现代装备。", majors: [
-          ["080601", "电气工程及其自动化"], ["080602T", "智能电网信息工程"], ["080603T", "光源与照明"], ["080604T", "电气工程与智能控制"], ["080605T", "电机电器智能化"], ["080606T", "电缆工程"], ["080607T", "能源互联网工程"], ["080608TK", "智慧能源工程"], ["080609T", "电动载运工程"], ["080610TK", "大功率半导体科学与工程"]
-        ] },
-        civil: { name: "土木类", field: "工学 · 土木类", summary: "面向建筑与基础设施的结构、环境、建造和运维，关注安全、可靠与工程实现。", majors: [
-          ["081001", "土木工程"], ["081002", "建筑环境与能源应用工程"], ["081003", "给排水科学与工程"], ["081004", "建筑电气与智能化"], ["081005T", "城市地下空间工程"], ["081006T", "道路桥梁与渡河工程"], ["081007T", "铁道工程"], ["081008T", "智能建造"], ["081009T", "土木、水利与海洋工程"], ["081010T", "土木、水利与交通工程"], ["081011T", "城市水系统工程"], ["081012T", "智能建造与智慧交通"], ["081013T", "工程软件"], ["081014T", "城市更新"]
-        ] },
-        architecture: { name: "建筑类", field: "工学 · 建筑类", summary: "从建筑、城市到景观研究空间的功能、审美与环境，强调设计思维和人居体验。", majors: [
-          ["082801", "建筑学"], ["082802", "城乡规划"], ["082803", "风景园林"], ["082804T", "历史建筑保护工程"], ["082805T", "人居环境科学与技术"], ["082806T", "城市设计"], ["082807T", "智慧建筑与建造"], ["082808T", "智慧景观营造"]
-        ] },
-        materials: { name: "材料类", field: "工学 · 材料类", summary: "研究材料的组成、结构、性能、制备与应用，为制造、能源、电子和生命工程提供基础。", majors: [
-          ["080401", "材料科学与工程"], ["080402", "材料物理"], ["080403", "材料化学"], ["080404", "冶金工程"], ["080405", "金属材料工程"], ["080406", "无机非金属材料工程"], ["080407", "高分子材料与工程"], ["080408", "复合材料与工程"], ["080409T", "粉体材料科学与工程"], ["080410T", "宝石及材料工艺学"], ["080411T", "焊接技术与工程"], ["080412T", "功能材料"], ["080413T", "纳米材料与技术"], ["080414T", "新能源材料与器件"], ["080415T", "材料设计科学与工程"], ["080416T", "复合材料成型工程"], ["080417T", "智能材料与结构"], ["080418T", "光电信息材料与器件"], ["080419T", "生物材料"], ["080420T", "材料智能技术"], ["080421T", "电子信息材料"], ["080422T", "软物质科学与工程"], ["080423T", "稀土材料科学与工程"]
-        ] },
-        energy: { name: "能源动力类", field: "工学 · 能源动力类", summary: "研究热、动力、新能源、储能与能源系统，关注能量的高效转换和可持续利用。", majors: [
-          ["080501", "能源与动力工程"], ["080502T", "能源与环境系统工程"], ["080503T", "新能源科学与工程"], ["080504T", "储能科学与工程"], ["080505T", "能源服务工程"], ["080506TK", "氢能科学与工程"], ["080507TK", "可持续能源"], ["080508T", "能源科学与工程"]
-        ] },
-        transportation: { name: "交通运输类", field: "工学 · 交通运输类", summary: "研究人和货物的安全高效流动，覆盖道路、轨道、海运、航空与智慧交通系统。", majors: [
-          ["081801", "交通运输"], ["081802", "交通工程"], ["081803K", "航海技术"], ["081804K", "轮机工程"], ["081805K", "飞行技术"], ["081806T", "交通设备与控制工程"], ["081807T", "救助与打捞工程"], ["081808TK", "船舶电子电气工程"], ["081809T", "轨道交通电气与控制"], ["081810T", "邮轮工程与管理"], ["081811T", "智慧交通"], ["081812T", "智能运输工程"], ["081813T", "交通能源融合工程"]
-        ] },
-        aerospace: { name: "航空航天类", field: "工学 · 航空航天类", summary: "围绕飞行器设计、制造、动力、控制、适航和运维，探索天空与空间中的工程系统。", majors: [
-          ["082001", "航空航天工程"], ["082002", "飞行器设计与工程"], ["082003", "飞行器制造工程"], ["082004", "飞行器动力工程"], ["082005", "飞行器环境与生命保障工程"], ["082006T", "飞行器质量与可靠性"], ["082007T", "飞行器适航技术"], ["082008T", "飞行器控制与信息工程"], ["082009T", "无人驾驶航空器系统工程"], ["082010T", "智能飞行器技术"], ["082011T", "空天智能电推进技术"], ["082012T", "飞行器运维工程"]
-        ] },
-        environment: { name: "环境科学与工程类", field: "工学 · 环境科学与工程类", summary: "以科学和工程方法认识环境问题，开展污染防治、生态保护、资源利用与环境管理。", majors: [
-          ["082501", "环境科学与工程"], ["082502", "环境工程"], ["082503", "环境科学"], ["082504", "环境生态工程"], ["082505T", "环保设备工程"], ["082506T", "资源环境科学"], ["082507T", "水质科学与技术"]
-        ] },
-        mathematics: { name: "数学类", field: "理学 · 数学类", summary: "从抽象结构、严密推理到数据与计算建模，为科学研究和技术应用提供共同语言。", majors: [
-          ["070101", "数学与应用数学"], ["070102", "信息与计算科学"], ["070103T", "数理基础科学"], ["070104T", "数据计算及应用"], ["070105TK", "智能计算"]
-        ] },
-        economics: { name: "经济学类", field: "经济学 · 经济学类", summary: "研究资源配置、经济运行和公共决策，并延伸到数字、能源、劳动和低空经济等领域。", majors: [
-          ["020101", "经济学"], ["020102", "经济统计学"], ["020103T", "国民经济管理"], ["020104T", "资源与环境经济学"], ["020105T", "商务经济学"], ["020106T", "能源经济"], ["020107T", "劳动经济学"], ["020108T", "经济工程"], ["020109T", "数字经济"], ["020110TK", "低空经济与管理"], ["020111T", "资源环境审计"]
-        ] },
-        business: { name: "工商管理类", field: "管理学 · 工商管理类", summary: "从战略、市场、财务、组织和运营角度理解企业与商业活动的管理实践。", majors: [
-          ["120201K", "工商管理"], ["120202", "市场营销"], ["120203K", "会计学"], ["120204", "财务管理"], ["120205", "国际商务"], ["120206", "人力资源管理"], ["120207", "审计学"], ["120208", "资产评估"], ["120209", "物业管理"], ["120210", "文化产业管理"], ["120211T", "劳动关系"], ["120212T", "体育经济与管理"], ["120213T", "财务会计教育"], ["120214T", "市场营销教育"], ["120215T", "零售业管理"], ["120216T", "创业管理"], ["120217TK", "海关稽查"], ["120218T", "内部审计"], ["120219TK", "商业人工智能"]
-        ] },
-        design: { name: "设计学类", field: "艺术学 · 设计学类", summary: "以视觉、产品、空间、材料和数字媒介为载体，把文化、技术和人的体验转化为设计。", majors: [
-          ["130501", "艺术设计学"], ["130502", "视觉传达设计"], ["130503", "环境设计"], ["130504", "产品设计"], ["130505", "服装与服饰设计"], ["130506", "公共艺术"], ["130507", "工艺美术"], ["130508", "数字媒体艺术"], ["130509T", "艺术与科技"], ["130510TK", "陶瓷艺术设计"], ["130511T", "新媒体艺术"], ["130512T", "包装设计"], ["130513TK", "珠宝首饰设计与工艺"], ["130514T", "人居设计"], ["130515TK", "游戏艺术设计"]
-        ] },
-        bioengineering: { name: "生物工程类", field: "工学 · 生物工程类", summary: "利用生物学、工程学和制造技术开发生物产品与工艺，生物制药属于这个专业类别。", majors: [
-          ["083001", "生物工程"], ["083002T", "生物制药"], ["083003T", "合成生物学"], ["083004T", "生物制造"]
-        ] }
-      };
-
       const params = new URLSearchParams(location.search);
-      const requestedKey = params.get("category");
-      const categoryKey = categories[requestedKey] ? requestedKey : "bioengineering";
-      const category = categories[categoryKey];
+      const categorySlug = /^[a-z0-9-]+$/.test(params.get("category") || "") ? params.get("category") : "computer";
       const contentMode = document.getElementById("contentMode");
       const cardGrid = document.getElementById("cardGrid");
       const sectionHint = document.getElementById("sectionHint");
@@ -156,32 +109,50 @@
       const modeTrigger = contentModeBox.querySelector(".selectBox-trigger");
       const modeValue = contentModeBox.querySelector(".selectBox-value");
       const modeOptions = Array.from(contentModeBox.querySelectorAll(".selectBox-option"));
+      let pageData = null;
 
-      function typeLabel(code) {
-        if (code.endsWith("TK")) return "特设 · 国控";
-        if (code.endsWith("K")) return "国控";
-        if (code.endsWith("T")) return "特设";
+      function escapeHtml(value) {
+        return String(value == null ? "" : value)
+          .replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;")
+          .replaceAll('"', "&quot;").replaceAll("'", "&#39;");
+      }
+
+      function safeTarget(value, fallback) {
+        if (!value) return fallback;
+        if (/^[a-zA-Z0-9_-]+\.html(?:\?[^\s]*)?$/.test(value)) return value;
+        if (/^https:\/\//i.test(value)) return value;
+        return fallback;
+      }
+
+      function typeLabel(type) {
+        if (type === "SPECIAL_CONTROLLED") return "特设 · 国控";
+        if (type === "CONTROLLED") return "国控";
+        if (type === "SPECIAL") return "特设";
         return "基本";
       }
 
-      function getCards(mode) {
+      function cardsFor(mode) {
+        if (!pageData) return [];
         if (mode === "route") {
-          return [{
-            icon: "⌘",
-            title: category.name + "通用就业路线",
-            description: "从共同基础、核心能力到工程或行业实践，建立面向这个专业类别的通用能力框架。",
-            href: "routeDemo.html?title=" + encodeURIComponent(category.name + "通用就业路线") + "&return=" + encodeURIComponent("learnMajorCategory.html?category=" + categoryKey),
-            action: "进入就业路线",
-            wide: true
-          }];
+          return (pageData.routes || []).map(function (route) {
+            const fallback = "routeDemo.html?title=" + encodeURIComponent(route.title || "学习路线") +
+              "&return=" + encodeURIComponent("learnMajorCategory.html?category=" + categorySlug);
+            return {
+              icon: route.icon || "⌘",
+              title: route.title,
+              description: route.description,
+              href: safeTarget(route.targetUrl, fallback),
+              action: "进入学习路线"
+            };
+          });
         }
-        return category.majors.map(function (major) {
+        return (pageData.majors || []).map(function (major) {
           return {
             icon: "◇",
-            code: major[0],
-            title: major[1],
-            description: major[0] + " · " + typeLabel(major[0]) + " · " + category.name + "本科专业",
-            href: "majorDemo.html?title=" + encodeURIComponent(major[1]) + "&return=" + encodeURIComponent("learnMajorCategory.html?category=" + categoryKey),
+            title: major.name,
+            description: major.code + " · " + typeLabel(major.programType) + " · " + pageData.category.name + "本科专业",
+            href: "majorDemo.html?title=" + encodeURIComponent(major.name) +
+              "&return=" + encodeURIComponent("learnMajorCategory.html?category=" + categorySlug),
             action: "查看专业导向"
           };
         });
@@ -189,9 +160,20 @@
 
       function renderCards() {
         const mode = contentMode.value;
-        sectionHint.textContent = mode === "route" ? "选择一条路线开始学习" : "共 " + category.majors.length + " 个具体专业";
-        cardGrid.innerHTML = getCards(mode).map(function (item) {
-          return '<article class="route' + (item.wide ? ' wide' : '') + '"><span class="tag">公开</span><div class="route-icon">' + item.icon + '</div><h3>' + item.title + '</h3><p>' + item.description + '</p><a href="' + item.href + '">' + item.action + ' →</a></article>';
+        const cards = cardsFor(mode);
+        sectionHint.textContent = mode === "route"
+          ? "共 " + cards.length + " 条学习路线"
+          : "共 " + cards.length + " 个具体专业";
+        if (!cards.length) {
+          cardGrid.innerHTML = '<article class="route wide"><div class="route-icon">…</div><h3>内容正在整理</h3><p>这个类别暂时没有已发布的' +
+            (mode === "route" ? "学习路线" : "具体专业") + '。</p></article>';
+          return;
+        }
+        cardGrid.innerHTML = cards.map(function (item) {
+          return '<article class="route"><span class="tag">公开</span><div class="route-icon">' +
+            escapeHtml(item.icon) + '</div><h3>' + escapeHtml(item.title) + '</h3><p>' +
+            escapeHtml(item.description) + '</p><a href="' + escapeHtml(item.href) + '">' +
+            escapeHtml(item.action) + ' →</a></article>';
         }).join("");
         cardGrid.querySelectorAll(".route").forEach(function (card, index) {
           card.style.setProperty("--card-delay", Math.min(index * 45, 360) + "ms");
@@ -212,12 +194,28 @@
         renderCards();
       }
 
-      document.getElementById("brandName").textContent = "ProfilesSystem · " + category.name + "专业";
-      document.getElementById("categoryName").textContent = category.name;
-      document.getElementById("fieldName").textContent = category.field;
-      document.getElementById("categorySummary").textContent = category.summary;
-      document.getElementById("footText").textContent = "ProfilesSystem · " + category.name + "专业学习空间";
-      document.title = category.name + "专业 · ProfilesSystem";
+      async function loadCategory() {
+        cardGrid.innerHTML = '<article class="route wide"><div class="route-icon">…</div><h3>正在加载</h3><p>正在从学习目录中读取专业与路线。</p></article>';
+        try {
+          const response = await fetch("/api/learning/categories/" + encodeURIComponent(categorySlug));
+          const result = await response.json();
+          if (!response.ok || result.code !== 200 || !result.data) throw new Error(result.message || "专业类别加载失败");
+          pageData = result.data;
+          const category = pageData.category;
+          document.getElementById("brandName").textContent = "ProfilesSystem · " + category.name + "专业";
+          document.getElementById("categoryName").textContent = category.name;
+          document.getElementById("fieldName").textContent = category.fieldName;
+          document.getElementById("categorySummary").textContent = category.summary;
+          document.getElementById("footText").textContent = "ProfilesSystem · " + category.name + "专业学习空间";
+          document.title = category.name + "专业 · ProfilesSystem";
+          renderCards();
+        } catch (error) {
+          document.getElementById("categoryName").textContent = "专业内容加载失败";
+          document.getElementById("categorySummary").textContent = error.message || "请稍后重试";
+          cardGrid.innerHTML = '<article class="route wide"><div class="route-icon">!</div><h3>暂时无法读取目录</h3><p>' +
+            escapeHtml(error.message || "请检查网络或数据库配置") + '</p></article>';
+        }
+      }
 
       modeTrigger.addEventListener("click", function () {
         const opening = !contentModeBox.classList.contains("is-open");
@@ -238,7 +236,7 @@
         const link = event.target.closest(".route")?.querySelector("a[href]");
         if (link) link.click();
       });
-      renderCards();
+      loadCategory();
     </script>
   </body>
 </html>

@@ -52,7 +52,15 @@
       .change p { margin: 2px 0 0; color: #475569; font-size: 14px; line-height: 1.75; }
       .foot { margin: 42px 0 0 31px; color: #94a3b8; font-size: 12px; }
       .release { opacity: 0; animation: rise .65s cubic-bezier(.2,.8,.2,1) forwards; }
+      .release:nth-child(1) { animation-delay: .04s; }
       .release:nth-child(2) { animation-delay: .12s; }
+      .release:nth-child(3) { animation-delay: .20s; }
+      .release:nth-child(4) { animation-delay: .28s; }
+      .release:nth-child(5) { animation-delay: .36s; }
+      .release:nth-child(6) { animation-delay: .44s; }
+      .release:nth-child(7) { animation-delay: .52s; }
+      .release:nth-child(8) { animation-delay: .60s; }
+      .release:nth-child(9) { animation-delay: .68s; }
       @keyframes rise { from { opacity: 0; transform: translateY(22px); } to { opacity: 1; transform: translateY(0); } }
       @media (max-width: 620px) {
         .page { width: min(100% - 24px, 520px); padding-top: 18px; }
@@ -90,6 +98,45 @@
       </section>
 
       <section class="timeline" aria-label="版本记录">
+        <article class="release">
+          <div class="release-head">
+            <div><h2>v0.2.1</h2><p class="release-note">内容包按钮修复 · 文件选择入口恢复完整交互。</p></div>
+            <time datetime="2026-10-31">2026 · 10 · 31</time>
+          </div>
+          <div class="changes">
+            <div class="change"><span class="tag fix">修复</span><p>将模拟标签改为真实按钮，统一高度、文字对齐、悬浮反馈和可点击区域。</p></div>
+          </div>
+        </article>
+        <article class="release">
+          <div class="release-head">
+            <div><h2>v0.2.0</h2><p class="release-note">学习内容迁移 · 管理员可安全导入和导出业务内容。</p></div>
+            <time datetime="2026-10-31">2026 · 10 · 31</time>
+          </div>
+          <div class="changes">
+            <div class="change"><span class="tag new">新增</span><p>管理面板新增专业类别、具体专业、学习路线和学习资源的内容概览、JSON 导出与合并导入。</p></div>
+            <div class="change"><span class="tag improve">优化</span><p>导入使用格式版本、数量限制、依赖检查和事务回滚，不暴露表名，也不接受 SQL 或数据结构操作。</p></div>
+          </div>
+        </article>
+        <article class="release">
+          <div class="release-head">
+            <div><h2>v0.1.1</h2><p class="release-note">日志动画修正 · 版本记录按照时间顺序依次出现。</p></div>
+            <time datetime="2026-10-31">2026 · 10 · 31</time>
+          </div>
+          <div class="changes">
+            <div class="change"><span class="tag fix">修复</span><p>修正新增版本后动画序号错位的问题，日志卡片现在从最新版本开始依次进入。</p></div>
+          </div>
+        </article>
+        <article class="release">
+          <div class="release-head">
+            <div><h2>v0.1.0</h2><p class="release-note">学习内容数据化 · 专业、路线与资源由后端统一组织。</p></div>
+            <time datetime="2026-10-31">2026 · 10 · 31</time>
+          </div>
+          <div class="changes">
+            <div class="change"><span class="tag new">新增</span><p>建立专业类别、具体专业、学习路线和学习资源四类数据模型，并提供公开查询与管理员资源维护接口。</p></div>
+            <div class="change"><span class="tag new">新增</span><p>新增资源详情页，可展示资源归属、类型和访问等级，并安全打开站内页面或 HTTPS 链接。</p></div>
+            <div class="change"><span class="tag improve">优化</span><p>专业总览、类别学习页和资源卡片改为接口动态渲染；资源与路线等级改由后端按登录账户过滤。</p></div>
+          </div>
+        </article>
         <article class="release">
           <div class="release-head">
             <div><h2>v0.0.5</h2><p class="release-note">资源分类同步 · 专业与资源使用同一套类别目录。</p></div>

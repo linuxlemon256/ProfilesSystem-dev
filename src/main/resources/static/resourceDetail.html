@@ -1,0 +1,234 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>学习资源 · ProfilesSystem</title>
+    <style>
+      :root {
+        font-family: Inter, "PingFang SC", "Microsoft YaHei", sans-serif;
+        color: #172554;
+        background: #f8fafc;
+      }
+      * { box-sizing: border-box; }
+      body {
+        min-height: 100vh;
+        margin: 0;
+        background:
+          radial-gradient(circle at 8% 8%, #dbeafe 0, transparent 28%),
+          radial-gradient(circle at 92% 88%, #ede9fe 0, transparent 30%),
+          #f8fafc;
+      }
+      a { color: inherit; }
+      .page { width: min(920px, calc(100% - 32px)); margin: 0 auto; padding: 28px 0 56px; }
+      .topbar { display: flex; align-items: center; justify-content: space-between; gap: 18px; }
+      .brand { display: flex; align-items: center; gap: 10px; font-size: 13px; font-weight: 900; }
+      .mark {
+        display: grid; width: 34px; height: 34px; place-items: center; border-radius: 11px;
+        color: #fff; background: linear-gradient(135deg, #2563eb, #7c3aed);
+        box-shadow: 0 10px 24px #4f46e533;
+      }
+      .back {
+        padding: 9px 13px; border-radius: 11px; color: #475569; background: #ffffffb8;
+        border: 1px solid #e2e8f0; text-decoration: none; font-size: 12px; font-weight: 800;
+        transition: transform .2s, border-color .2s, color .2s;
+      }
+      .back:hover { transform: translateY(-2px); border-color: #a5b4fc; color: #4338ca; }
+      .resource {
+        position: relative; overflow: hidden; margin-top: clamp(54px, 10vw, 96px);
+        padding: clamp(30px, 6vw, 58px); border: 1px solid #e0e7ff; border-radius: 30px;
+        background: #ffffffeb; box-shadow: 0 28px 80px #1e3a8a17;
+        animation: rise .55s cubic-bezier(.2,.8,.2,1) both;
+      }
+      .resource::before {
+        content: ""; position: absolute; width: 230px; height: 230px; right: -95px; top: -105px;
+        border-radius: 50%; background: linear-gradient(135deg, #dbeafe, #ede9fe); opacity: .85;
+      }
+      .head { position: relative; display: flex; align-items: flex-start; gap: 22px; }
+      .icon {
+        display: grid; flex: 0 0 auto; width: 68px; height: 68px; place-items: center;
+        border-radius: 21px; color: #fff; background: linear-gradient(135deg, #2563eb, #7c3aed);
+        font-size: 28px; box-shadow: 0 16px 32px #4f46e533;
+      }
+      .meta { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 13px; }
+      .badge {
+        display: inline-flex; align-items: center; padding: 6px 10px; border-radius: 999px;
+        font-size: 11px; font-weight: 900; letter-spacing: .05em;
+      }
+      .category { color: #1d4ed8; background: #dbeafe; }
+      .level-public { color: #047857; background: #d1fae5; }
+      .level-associated { color: #6d28d9; background: #ede9fe; }
+      .level-internal { color: #fff; background: linear-gradient(110deg, #4f46e5, #9333ea, #2563eb); background-size: 200% 100%; animation: shimmer 2.8s linear infinite; }
+      h1 { margin: 0; color: #0f172a; font-size: clamp(30px, 6vw, 52px); letter-spacing: -.055em; line-height: 1.08; }
+      .description { position: relative; max-width: 690px; margin: 28px 0 0; color: #64748b; font-size: 15px; line-height: 1.9; }
+      .facts {
+        position: relative; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px;
+        margin-top: 30px; padding-top: 25px; border-top: 1px solid #e2e8f0;
+      }
+      .fact { padding: 15px; border-radius: 16px; background: #f8fafc; }
+      .fact span { display: block; color: #94a3b8; font-size: 10px; font-weight: 900; letter-spacing: .08em; }
+      .fact strong { display: block; margin-top: 6px; color: #334155; font-size: 13px; overflow-wrap: anywhere; }
+      .actions { position: relative; display: flex; flex-wrap: wrap; gap: 10px; margin-top: 28px; }
+      .action {
+        display: inline-flex; align-items: center; justify-content: center; min-height: 44px; padding: 0 18px;
+        border: 0; border-radius: 13px; color: #fff; background: linear-gradient(135deg, #2563eb, #7c3aed);
+        box-shadow: 0 12px 28px #4f46e52b; text-decoration: none; font-size: 13px; font-weight: 900;
+        transition: transform .2s, box-shadow .2s;
+      }
+      .action:hover { transform: translateY(-2px); box-shadow: 0 16px 34px #4f46e53d; }
+      .action.disabled { color: #64748b; background: #e2e8f0; box-shadow: none; cursor: not-allowed; }
+      .state { position: relative; text-align: center; padding: 24px 0; }
+      .state .icon { margin: 0 auto 18px; }
+      .state p { color: #64748b; line-height: 1.8; }
+      [hidden] { display: none !important; }
+      @keyframes rise { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: none; } }
+      @keyframes shimmer { to { background-position: -200% 0; } }
+      @media (max-width: 620px) {
+        .head { display: block; }
+        .head .icon { margin-bottom: 22px; }
+        .facts { grid-template-columns: 1fr; }
+        .resource { border-radius: 22px; }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        *, *::before, *::after { animation: none !important; transition: none !important; }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="page">
+      <header class="topbar">
+        <div class="brand"><span class="mark">P</span><span>ProfilesSystem · 学习资源</span></div>
+        <a class="back" href="learnIndex.html">← 返回学习空间</a>
+      </header>
+
+      <section class="resource" id="resourcePanel">
+        <div class="state" id="loadingState">
+          <div class="icon">…</div>
+          <h1>正在读取资源</h1>
+          <p>正在确认资源信息和你的访问等级。</p>
+        </div>
+
+        <div id="resourceContent" hidden>
+          <div class="head">
+            <div class="icon" id="resourceIcon">✦</div>
+            <div>
+              <div class="meta">
+                <span class="badge category" id="categoryBadge">学习资源</span>
+                <span class="badge level-public" id="levelBadge">公开</span>
+              </div>
+              <h1 id="resourceTitle">学习资源</h1>
+            </div>
+          </div>
+          <p class="description" id="resourceDescription"></p>
+          <div class="facts">
+            <div class="fact"><span>资源类型</span><strong id="resourceType">链接</strong></div>
+            <div class="fact"><span>所属专业</span><strong id="majorName">通用资源</strong></div>
+            <div class="fact"><span>资源编号</span><strong id="resourceId">—</strong></div>
+          </div>
+          <div class="actions" id="resourceActions"></div>
+        </div>
+
+        <div class="state" id="errorState" hidden>
+          <div class="icon">!</div>
+          <h1>暂时无法打开</h1>
+          <p id="errorMessage">资源不存在，或当前账户等级无权访问。</p>
+          <div class="actions" style="justify-content:center"><a class="action" href="learnIndex.html">返回资源选择</a></div>
+        </div>
+      </section>
+    </main>
+
+    <script>
+      const params = new URLSearchParams(location.search);
+      const resourceId = params.get("id");
+
+      function text(id, value) {
+        document.getElementById(id).textContent = value == null || value === "" ? "—" : String(value);
+      }
+
+      function accessInfo(level) {
+        if (Number(level) >= 2) return { text: "内部", className: "level-internal" };
+        if (Number(level) === 1) return { text: "关联", className: "level-associated" };
+        return { text: "公开", className: "level-public" };
+      }
+
+      function typeName(type) {
+        return ({ LINK: "网页链接", FILE: "资源文件", PAGE: "站内页面" })[type] || type || "学习资源";
+      }
+
+      function safeTarget(value) {
+        if (!value) return "";
+        if (/^https:\/\//i.test(value)) return value;
+        try {
+          const url = new URL(value, location.href);
+          const file = url.pathname.split("/").pop();
+          if (url.origin === location.origin && /^[a-zA-Z0-9_-]+\.html$/.test(file || "")) {
+            return file + url.search + url.hash;
+          }
+        } catch (_) {
+          return "";
+        }
+        return "";
+      }
+
+      function showError(message) {
+        document.getElementById("loadingState").hidden = true;
+        document.getElementById("resourceContent").hidden = true;
+        document.getElementById("errorState").hidden = false;
+        text("errorMessage", message || "资源不存在，或当前账户等级无权访问。");
+      }
+
+      function renderResource(resource) {
+        const access = accessInfo(resource.requiredLevel);
+        text("resourceIcon", resource.icon || "✦");
+        text("categoryBadge", (resource.categoryName || "通用") + "专业资源");
+        text("levelBadge", access.text);
+        document.getElementById("levelBadge").className = "badge " + access.className;
+        text("resourceTitle", resource.title);
+        text("resourceDescription", resource.description || "该资源暂时没有补充说明。");
+        text("resourceType", typeName(resource.resourceType));
+        text("majorName", resource.majorName || "类别通用");
+        text("resourceId", "#" + resource.id);
+        document.title = resource.title + " · ProfilesSystem";
+
+        const target = safeTarget(resource.targetUrl);
+        const actions = document.getElementById("resourceActions");
+        if (target) {
+          const external = /^https:\/\//i.test(target);
+          const link = document.createElement("a");
+          link.className = "action";
+          link.href = target;
+          link.textContent = external ? "打开外部资源 ↗" : "进入资源 →";
+          if (external) { link.target = "_blank"; link.rel = "noopener noreferrer"; }
+          actions.appendChild(link);
+        } else {
+          const unavailable = document.createElement("span");
+          unavailable.className = "action disabled";
+          unavailable.textContent = resource.resourceType === "FILE" ? "文件接口待接入" : "访问方式整理中";
+          actions.appendChild(unavailable);
+        }
+
+        document.getElementById("loadingState").hidden = true;
+        document.getElementById("resourceContent").hidden = false;
+      }
+
+      async function loadResource() {
+        if (!/^\d+$/.test(resourceId || "")) {
+          showError("资源编号无效，请从学习空间重新选择资源。");
+          return;
+        }
+        try {
+          const response = await fetch("/api/learning/resources/" + encodeURIComponent(resourceId));
+          const result = await response.json();
+          if (!response.ok || result.code !== 200 || !result.data) {
+            throw new Error(result.message || "资源读取失败");
+          }
+          renderResource(result.data);
+        } catch (error) {
+          showError(error.message || "网络异常，请稍后再试。");
+        }
+      }
+
+      loadResource();
+    </script>
+  </body>
+</html>
