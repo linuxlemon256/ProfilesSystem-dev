@@ -876,10 +876,24 @@
                 </svg>
               </button>
 
-              <ul class="selectBox-menu" role="listbox" aria-label="内部资源">
-                <li class="selectBox-option" role="option" data-value="computer"   aria-selected="true">计算机类专业资源</li>
+              <ul class="selectBox-menu" role="listbox" aria-label="专业资源">
+                <li class="selectBox-option" role="option" data-value="computer" aria-selected="true">计算机类专业资源</li>
                 <li class="selectBox-option" role="option" data-value="mechanical" aria-selected="false">机械类专业资源</li>
-                <li class="selectBox-option" role="option" data-value="automation" aria-selected="false">自动化专业资源</li>
+                <li class="selectBox-option" role="option" data-value="automation" aria-selected="false">自动化类专业资源</li>
+                <li class="selectBox-option" role="option" data-value="electronics" aria-selected="false">电子信息类专业资源</li>
+                <li class="selectBox-option" role="option" data-value="electrical" aria-selected="false">电气类专业资源</li>
+                <li class="selectBox-option" role="option" data-value="civil" aria-selected="false">土木类专业资源</li>
+                <li class="selectBox-option" role="option" data-value="architecture" aria-selected="false">建筑类专业资源</li>
+                <li class="selectBox-option" role="option" data-value="materials" aria-selected="false">材料类专业资源</li>
+                <li class="selectBox-option" role="option" data-value="energy" aria-selected="false">能源动力类专业资源</li>
+                <li class="selectBox-option" role="option" data-value="transportation" aria-selected="false">交通运输类专业资源</li>
+                <li class="selectBox-option" role="option" data-value="aerospace" aria-selected="false">航空航天类专业资源</li>
+                <li class="selectBox-option" role="option" data-value="environment" aria-selected="false">环境科学与工程类专业资源</li>
+                <li class="selectBox-option" role="option" data-value="mathematics" aria-selected="false">数学类专业资源</li>
+                <li class="selectBox-option" role="option" data-value="economics" aria-selected="false">经济学类专业资源</li>
+                <li class="selectBox-option" role="option" data-value="business" aria-selected="false">工商管理类专业资源</li>
+                <li class="selectBox-option" role="option" data-value="design" aria-selected="false">设计学类专业资源</li>
+                <li class="selectBox-option" role="option" data-value="bioengineering" aria-selected="false">生物工程类专业资源</li>
               </ul>
 
               <!-- 用隐藏域替代原生 select，保留 name / id 以便表单提交 -->
@@ -940,9 +954,19 @@
             <div class="icon">✦</div>
             <h3>自动化资源正在整理</h3>
             <p>控制原理、传感器和工业网络资料还在调试中。</p>
-            <a href="resourceDemo.html?title=自动化专业资源&amp;return=learnIndex.html">查看资源 →</a>
+            <a href="resourceDemo.html?title=自动化类专业资源&amp;return=learnIndex.html">查看资源 →</a>
           </article>
         </div>
+        <div id="genericResource" class="resource-view" hidden>
+          <article class="card">
+            <span class="access-level level-undetermined">未定</span>
+            <div class="icon" id="genericResourceIcon">✦</div>
+            <h3 id="genericResourceTitle">专业资源正在整理</h3>
+            <p id="genericResourceDescription">相关资料正在整理中。</p>
+            <a id="genericResourceLink" href="resourceDemo.html?title=专业资源&amp;return=learnIndex.html">查看资源 →</a>
+          </article>
+        </div>
+
       </section>
       <section class="services-section">
         <div class="section-title">
@@ -1141,13 +1165,39 @@
       }
       const box = document.getElementById('majorResourceBox');
       const resourceViews = Array.from(document.querySelectorAll('.resource-view'));
+      const resourceCatalog = {
+        computer: { name: '计算机类', icon: '💻' },
+        mechanical: { name: '机械类', icon: '⚙' },
+        automation: { name: '自动化类', icon: '⏱' },
+        electronics: { name: '电子信息类', icon: '⌁' },
+        electrical: { name: '电气类', icon: 'ϟ' },
+        civil: { name: '土木类', icon: '▥' },
+        architecture: { name: '建筑类', icon: '⌂' },
+        materials: { name: '材料类', icon: '◇' },
+        energy: { name: '能源动力类', icon: '☀' },
+        transportation: { name: '交通运输类', icon: '⇄' },
+        aerospace: { name: '航空航天类', icon: '✈' },
+        environment: { name: '环境科学与工程类', icon: '♧' },
+        mathematics: { name: '数学类', icon: '∑' },
+        economics: { name: '经济学类', icon: '↗' },
+        business: { name: '工商管理类', icon: '▦' },
+        design: { name: '设计学类', icon: '✦' },
+        bioengineering: { name: '生物工程类', icon: '⌬' }
+      };
 
       function showResource(value) {
+        const dedicatedView = document.getElementById(value + 'Resource');
+        const activeView = dedicatedView || document.getElementById('genericResource');
         resourceViews.forEach((view) => {
-          view.hidden = view.id !== value + 'Resource';
+          view.hidden = view !== activeView;
         });
-        const activeView = document.getElementById(value + 'Resource');
-        if (!activeView) return;
+        if (!dedicatedView) {
+          const resource = resourceCatalog[value] || resourceCatalog.computer;
+          document.getElementById('genericResourceIcon').textContent = resource.icon;
+          document.getElementById('genericResourceTitle').textContent = resource.name + '资源正在整理';
+          document.getElementById('genericResourceDescription').textContent = resource.name + '相关资料正在归类和整理中，后续会逐步补充公开、关联与内部资源。';
+          document.getElementById('genericResourceLink').href = 'resourceDemo.html?title=' + encodeURIComponent(resource.name + '专业资源') + '&return=learnIndex.html';
+        }
         activeView.querySelectorAll('.card').forEach((card, index) => {
           card.classList.remove('resource-card-enter');
           card.style.setProperty('--resource-delay', `${index * 55}ms`);
