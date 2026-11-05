@@ -40,6 +40,27 @@ public class LlmQuotaService {
     public Map<String,Object> quotaData(int level,int used,int limit){Map<String,Object> m=new LinkedHashMap<>();m.put("level",level);m.put("usedTokens",used);m.put("quotaTokens",limit);m.put("remainingTokens",Math.max(0,limit-used));m.put("refreshIntervalHours",settingInt("refresh_interval_hours",24));return m;}
     public Result<Map<String,Object>> status(String username){var u=users.findByName(username);if(u==null)return Result.fail(Result.CODE_UNAUTHORIZED,"账户不存在");int interval=settingInt("refresh_interval_hours",24);LocalDateTime r=mapper.refreshedAt(username);if(r!=null&&r.plusHours(interval).isBefore(LocalDateTime.now())){mapper.resetUser(username);r=null;}int used=mapper.usedTokens(username)==null?0:mapper.usedTokens(username);Map<String,Object> data=quotaData(u.getLevel(),used,quota(u.getLevel()));data.put("refreshedAt",r);return Result.ok(data);}
     public Result<Map<String,Object>> adminSettings(){Map<String,Object> m=new LinkedHashMap<>();m.put("level0Tokens",settingInt("level0_tokens",2000));m.put("level1Tokens",settingInt("level1_tokens",8000));m.put("level2Tokens",settingInt("level2_tokens",20000));m.put("refreshIntervalHours",settingInt("refresh_interval_hours",24));m.put("provider",provider());m.put("modelName",modelName());m.put("baseUrl",baseUrl());String key=apiKey();m.put("apiKeyConfigured",key!=null&&!key.isBlank());m.put("configured",modelConfigured());return Result.ok(m);}
-    @Transactional public Result<String> saveAdminSettings(LlmAdminSettingsBody b){if(b==null)return Result.fail(Result.CODE_BAD_REQUEST,"配置不能为空");if(b.getLevel0Tokens()==null||b.getLevel1Tokens()==null||b.getLevel2Tokens()==null||b.getRefreshIntervalHours()==null||b.getRefreshIntervalHours()<1)return Result.fail(Result.CODE_BAD_REQUEST,"额度和刷新间隔必须有效");String provider=b.getProvider()==null?"openapi":b.getProvider().trim().toLowerCase();if(!"openapi".equals(provider)&&!"ollama".equals(provider)&&!"ollama_external".equals(provider))return Result.fail(Result.CODE_BAD_REQUEST,"不支持的模型接入方式");if("ollama_external".equals(provider)&&(b.getBaseUrl()==null||b.getBaseUrl().isBlank()))return Result.fail(Result.CODE_BAD_REQUEST,"外接 Ollama 必须填写服务地址");mapper.saveSetting("level0_tokens",String.valueOf(b.getLevel0Tokens()));mapper.saveSetting("level1_tokens",String.valueOf(b.getLevel1Tokens()));mapper.saveSetting("level2_tokens",String.valueOf(b.getLevel2Tokens()));mapper.saveSetting("refresh_interval_hours",String.valueOf(b.getRefreshIntervalHours()));mapper.saveSetting("provider",provider);if(b.getModelName()!=null)mapper.saveSetting("model_name",b.getModelName().trim());if(!"ollama".equals(provider)&&b.getBaseUrl()!=null)mapper.saveSetting("base_url",b.getBaseUrl().trim());if(b.getApiKey()!=null&&!b.getApiKey().isBlank())mapper.saveSetting("api_key",b.getApiKey().trim());return Result.ok(null);}
+    @Transactional public Result<String> saveAdminSettings(LlmAdminSettingsBody b){
+        if(b==null)
+            return Result.fail(Result.CODE_BAD_REQUEST,"配置不能为空");
+        if(b.getLevel0Tokens()==null||b.getLevel1Tokens()==null||b.getLevel2Tokens()==null||b.getRefreshIntervalHours()==null||b.getRefreshIntervalHours()<1)
+            return Result.fail(Result.CODE_BAD_REQUEST,"额度和刷新间隔必须有效");
+        String provider=b.getProvider()==null?"openapi":b.getProvider().trim().toLowerCase();
+        if(!"openapi".equals(provider)&&!"ollama".equals(provider)&&!"ollama_external".equals(provider))
+            return Result.fail(Result.CODE_BAD_REQUEST,"不支持的模型接入方式");
+        if("ollama_external".equals(provider)&&(b.getBaseUrl()==null||b.getBaseUrl().isBlank()))
+            return Result.fail(Result.CODE_BAD_REQUEST,"外接 Ollama 必须填写服务地址");
+        mapper.saveSetting("level0_tokens",String.valueOf(b.getLevel0Tokens()));
+        mapper.saveSetting("level1_tokens",String.valueOf(b.getLevel1Tokens()));
+        mapper.saveSetting("level2_tokens",String.valueOf(b.getLevel2Tokens()));
+        mapper.saveSetting("refresh_interval_hours",String.valueOf(b.getRefreshIntervalHours()));
+        mapper.saveSetting("provider",provider);
+        if(b.getModelName()!=null)
+            mapper.saveSetting("model_name",b.getModelName().trim());
+        if(!"ollama".equals(provider)&&b.getBaseUrl()!=null)
+            mapper.saveSetting("base_url",b.getBaseUrl().trim());
+        if(b.getApiKey()!=null&&!b.getApiKey().isBlank())
+            mapper.saveSetting("api_key",b.getApiKey().trim());
+        return Result.ok(null);}
     public Result<String> resetAll(){mapper.resetAll();return Result.ok(null);}
 }
